@@ -1,0 +1,29 @@
+[APIServer]
+API_HOST = 156.56.104.12
+API_PORT = 9930
+API_SECURE = True
+[Gateway]
+GATEWAY_ID = molecular-dynamics
+GATEWAY_URL = https://md.cybershuttle.org
+[Thrift]
+THRIFT_CLIENT_POOL_KEEPALIVE = 5
+[KeycloakServer]
+CLIENT_ID = pga
+CLIENT_SECRET = CHANGEME
+TOKEN_URL = https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/token
+USER_INFO_URL = https://iam.scigap.org/auth/realms/molecular-dynamics/protocol/openid-connect/userinfo
+VERIFY_SSL = False
+CERTIFICATE_FILE_PATH = None
+REALM = molecular-dynamics
+API_URL = https://iam.scigap.org
+[ExperimentConf]
+APPLICATION_NAME = NAMD
+PROJECT_NAME = Default Project
+COMPUTE_HOST_DOMAIN = Bridges2,Expanse,NCSADelta
+GROUP_RESOURCE_PROFILE_NAME = Default
+STORAGE_RESOURCE_HOST = gf4.ucs.indiana.edu
+NODE_COUNT = 1
+TOTAL_CPU_COUNT = 1
+WALL_TIME_LIMIT = 30
+QUEUE_NAME = shared
+MONITOR_STATUS = True

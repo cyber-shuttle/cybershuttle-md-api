@@ -1,0 +1,15 @@
+oauthlib
+requests
+requests-oauthlib
+thrift
+thrift_connector==0.24
+paramiko
+scp
+pysftp
+configparser
+urllib3
+pyjwt
+ipywidgets
+jupyterlab
+airavata-python-sdk
+pandas

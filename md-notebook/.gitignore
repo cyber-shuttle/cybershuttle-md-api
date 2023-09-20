@@ -1,0 +1,7 @@
+.ipynb_checkpoints/
+.vscode/
+venv/
+*.pyc
+__pycache__
+outputs
+*.ini
