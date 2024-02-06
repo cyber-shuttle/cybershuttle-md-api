@@ -92,6 +92,17 @@ class ExperimentUtil:
         data = resp.json()
         return data["success"]
 
+    def get_all_files_for_experiment(self, experiment_id):
+            access_token = get_access_token_or_error()
+            headers = {"Authorization": f"Bearer {access_token}"}
+            resp = requests.get(
+                f"https://md.cybershuttle.org/api/experiment-storage/{quote(experiment_id)}/",
+                headers=headers,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+
     def launch_namd(
         self,
         run_dir,
