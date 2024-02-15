@@ -101,15 +101,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
 
-        self.access_token = get_access_token_or_error()
-
+        self.access_token = []
+        # "access_token is not being properlly propaged after "connect_to_cybershuttle".
+        # If you get an {"detail":"Token failed to authenticate"} do this:
+        #  -> Press "Connect to CyberShuttle", the close the App.
+        #  -> then re-enable the line bellow to get the token from MainWindow.
+        # self.access_token = get_access_token_or_error()
+        
         self.setupUi(self)
+
         self.exp_model = ExpModel()
         self.experimentView.setModel(self.exp_model)
 
         self.file_model = FileModel()
         self.fileView.setModel(self.file_model)
-        self.setWindowTitle("CyberShuttle App")
+        self.setWindowTitle("VMD - CyberShuttle App")
         
         # Button actions
         self.Connect.clicked.connect(self.connect_cybershuttle)
@@ -133,6 +139,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         from cybershuttle_md_cli.experiment_util import ExperimentUtil
         experiment_util = ExperimentUtil("./settings-NAMD.ini")
         logger = logging.getLogger(__name__)
+
+        self.access_token = get_access_token_or_error()
 
         print("Connected to CyberShuttle")
 

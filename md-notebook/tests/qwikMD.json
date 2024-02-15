@@ -1,0 +1,22 @@
+{ "namdFiles" :   [
+	{"Input": {
+		"configuration": ["Minimization"],
+		"parameters": 	["par_all36_carb.prm","par_all36_prot.prm","par_all36_cgenff.prm","par_all36_na.prm"],
+		"structure": 	["qwikmd_QwikMD.psf"],
+		"coordinates": 	["qwikmd_QwikMD.pdb"],
+		"consref": 		["Minimization_restraints.pdb"],
+		"conskfile": 	["Minimization_restraints.pdb"]
+
+		}
+	},
+	{"Output": {
+		"outputname" : 	["Minimization"],
+		"dcdfile":		["Minimization.dcd"],
+		"restartname": 	["Minimization.restart"],
+		"restartfiles": ["Minimization.restart.rst",
+						 "Minimization.restart.xsc",
+						 "Minimization.restart.vel",
+						 "Minimization.restart.coor"]
+		}
+	} 
+] }
