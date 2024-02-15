@@ -402,7 +402,7 @@ class ExperimentUtil:
 
         return download_handler
 
-    def download_experiment(self, experiment_id, output_dir="./outputs"):
+    def download_experiment(self, experiment_id, output_dir="./experiments"):
         access_token = get_access_token_or_error()
         headers = {"Authorization": f"Bearer {access_token}"}
         r = requests.get(
@@ -455,3 +455,27 @@ class ExperimentUtil:
         thread = threading.Thread(target=monitor_thread, args=(progress, experiment_id))
         thread.start()
         return progress
+
+    # Added by Diego 
+    def show_experiments(self, status=None, only_mine=True, limit=10, offset=0):
+        filters = {}
+
+        execution_id = self.airavata_util.get_execution_id(
+            self.experiment_conf.APPLICATION_NAME
+        )
+    
+        filters[ExperimentSearchFields.APPLICATION_ID] = execution_id
+        if status is not None:
+            filters[ExperimentSearchFields.STATUS] = status
+        if only_mine:
+            filters[ExperimentSearchFields.USER_NAME] = self.user_id
+        experiments = self.api_server_client.search_experiments(
+            self.airavata_token,
+            self.gateway_conf.GATEWAY_ID,
+            self.user_id,
+            filters,
+            limit=limit,
+            offset=offset,
+        )
+
+        return experiments
