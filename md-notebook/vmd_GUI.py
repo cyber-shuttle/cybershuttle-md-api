@@ -106,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # If you get an {"detail":"Token failed to authenticate"} do this:
         #  -> Press "Connect to CyberShuttle", the close the App.
         #  -> then re-enable the line bellow to get the token from MainWindow.
-        # self.access_token = get_access_token_or_error()
+        #self.access_token = get_access_token_or_error()
         
         self.setupUi(self)
 
