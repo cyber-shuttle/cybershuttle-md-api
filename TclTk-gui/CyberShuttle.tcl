@@ -22,6 +22,7 @@ namespace eval cybershuttle {
 	variable selected_psf_file
     variable selected_traj_file
     variable selected_out_file
+	variable tmpDir /tmp/
 }
 
 
@@ -64,7 +65,7 @@ proc cybershuttle::main {} {
 	grid   $w.f1.readToken -row 1 -column 0 -sticky nsew
 
 	# Text field for token
-	text   $w.f1.token -height 3 -width 50 -borderwidth 2 -relief sunken -setgrid true 
+	text   $w.f1.token -height 3 -width 70 -borderwidth 2 -relief sunken -setgrid true 
 	grid   $w.f1.token -row 0 -rowspan 2 -column 1 -sticky nsew
 
 #	# Create a button to read the contents of the text widget
@@ -91,8 +92,8 @@ proc cybershuttle::main {} {
     $w.f2.tree column status 		-width 100 -anchor w
     $w.f2.tree column name   		-width 200 -anchor w
     $w.f2.tree column description 	-width 200 -anchor w
-	$w.f2.tree column id 			-width 10  -anchor w
-	$w.f2.tree column url 			-width 10  -anchor w
+	$w.f2.tree column id 			-width 100  -anchor w
+	$w.f2.tree column url 			-width 0  -anchor w
 
     # Add scrollbars for the second treeview
     ttk::scrollbar $w.f2.yscroll2 -orient vertical   -command "$w.f2.tree yview"
@@ -128,6 +129,9 @@ proc cybershuttle::main {} {
     ttk::button $w.f3.listBtn -text "List files" -command [list cybershuttle::listFiles ]
     grid $w.f3.listBtn -row 0 -column 3 -pady 5
 
+    # Button to Download the selected experiment from the treeview
+    ttk::button $w.f3.downloadListBtn -text "Download file" -command [list cybershuttle::downloadFile ]
+    grid $w.f3.downloadListBtn -row 0 -column 4 -pady 5
 
     # Statusbar: Label to show the selected item in the second treeview
     ttk::label $w.f3.selectedLbl -text "Selected Item: None"
@@ -180,9 +184,9 @@ proc cybershuttle::main {} {
 	grid $w.f5.label3 -row 0 -column 2 -sticky "w" -padx 5 -pady 5
 
 	# Create dropdown menus
-	ttk::combobox $w.f5.psf_menu  -values $cybershuttle::psf_files  -width 10 -textvariable cybershuttle::selected_psf_file
-	ttk::combobox $w.f5.traj_menu -values $cybershuttle::traj_files -width 10 -textvariable cybershuttle::selected_traj_file
-	ttk::combobox $w.f5.out_menu  -values $cybershuttle::out_files  -width 10 -textvariable cybershuttle::selected_out_file
+	ttk::combobox $w.f5.psf_menu  -values $cybershuttle::psf_files  -width 20 -textvariable cybershuttle::selected_psf_file
+	ttk::combobox $w.f5.traj_menu -values $cybershuttle::traj_files -width 20 -textvariable cybershuttle::selected_traj_file
+	ttk::combobox $w.f5.out_menu  -values $cybershuttle::out_files  -width 20 -textvariable cybershuttle::selected_out_file
 	
 	# Grid layout for dropdown menus
 	grid $w.f5.psf_menu  -row 1 -column 0 -sticky "w" -padx 5 -pady 5
@@ -205,7 +209,7 @@ proc cybershuttle::main {} {
 	bind $w.f5.traj_menu <<ComboboxSelected>> { cybershuttle::update_selected_file_labels }
 	bind $w.f5.out_menu  <<ComboboxSelected>> { cybershuttle::update_selected_file_labels }
 
-	ttk::button $w.f5.btn1   -text "Load" -command [list cybershuttle::invokeBrowser "https://md.cybershuttle.org/auth/login-desktop/?show-code=true"]
+	ttk::button $w.f5.btn1   -text "Load" -command cybershuttle::load_in_vmd
 	grid $w.f5.btn1   -row 1 -column 3 -sticky "w" -padx 5 -pady 5
 
 
@@ -241,6 +245,7 @@ proc cybershuttle::update_selected_file_labels {} {
 proc cybershuttle::listFiles {} {
 	variable token
 	variable experimentId
+	variable experimentFiles
 	variable experimentFileNames
 	# Define your headers with the token
 	set headers [list Authorization "Bearer $token"]
@@ -474,7 +479,7 @@ proc cybershuttle::download_experiment {dir} {
         set itemValues [.cybershuttle.f2.tree item $itemId -values]
         set experimentId [lindex $itemValues 3]        
 		set url "https://md.cybershuttle.org/sdk/download-experiment-dir/${experimentId}/"
-		cybershuttle::download_file $dir $url "${experimentId}.zip"
+		cybershuttle::rundownloadFile $dir $url "${experimentId}.zip"
 		puts "
 # Downloading url: 
 $url
@@ -483,7 +488,33 @@ $dir/${experimentId}.zip"
 	}
 }
 
-proc cybershuttle::download_file {dir url filename} {
+
+proc cybershuttle::downloadFile {} {   
+	set dir [tk_chooseDirectory -title "Select Download Destination"]
+    if {$dir != ""} {
+        puts "Selected directory: $dir"
+        # Add your script execution code here
+	    set selectedItem [.cybershuttle.f4.tree selection]
+
+    	if {[llength $selectedItem] > 0} {
+        	set itemId [lindex $selectedItem 0]
+        	set itemValues [.cybershuttle.f4.tree item $itemId -values]
+        	set name [lindex $itemValues 0]        
+			# set url [lindex $itemValues 2]
+			set url [string map {download download-file} [lindex $itemValues 2] ]        
+			cybershuttle::rundownloadFile $dir $url $name
+			puts "
+# Downloading url: 
+$url
+# to:
+${dir}/${name}"
+	}
+
+	}
+}
+
+
+proc cybershuttle::rundownloadFile {dir url filename} {
 	variable token
 	set f [open [ file join $dir $filename ] wb]
 
@@ -543,7 +574,37 @@ proc cybershuttle::filter_files {file_list extension} {
     return $filtered_files
 }
 
+proc cybershuttle::load_in_vmd {} {
+	variable selected_psf_file
+    variable selected_traj_file
 
+	set file_url {}
+	foreach f $cybershuttle::experimentFiles { 
+	    dict set file_url [dict get $f name] [dict get $f downloadURL]
+	}
+
+	set url_psf    [ dict get $file_url $cybershuttle::selected_psf_file ]
+	set url_traj   [ dict get $file_url $cybershuttle::selected_traj_file ]
+
+    # BugFix
+	set url_psf  [string map {download download-file} $url_psf  ]
+	set url_traj [string map {download download-file} $url_traj  ]
+
+    set tmpdir "/tmp"
+
+	# Download Topology (PSF)
+	cybershuttle::rundownloadFile $tmpdir $url_psf [file join $cybershuttle::selected_psf_file] 
+	
+	# Download Coordinates/Trajectory (.PDB,.COOR,.DCD)
+	cybershuttle::rundownloadFile $tmpdir $url_traj [file join $cybershuttle::selected_traj_file] 
+
+	# Load on VMD
+    set psf  [file join $tmpdir $cybershuttle::selected_psf_file ]
+	set traj [file join $tmpdir $cybershuttle::selected_traj_file ]
+    mol new $psf
+	mol addfile $traj waitfor all 
+
+}
 
 
 proc test {} {
