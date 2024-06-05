@@ -6,7 +6,7 @@ package require tls
 package require json
 
 namespace eval cybershuttle {
-	variable w
+	variable w          ;# handle to main window
 	variable projects
 	variable project
 	variable replicas
@@ -34,7 +34,8 @@ set myDict2 {
 }
 
 proc cybershuttle::main {} {
-	global env
+	variable w
+  global env
 	
     # Main window
     set           w [ toplevel .cybershuttle ]
@@ -561,4 +562,9 @@ proc test {} {
 }
 
 
-cybershuttle::main
+#cybershuttle::main
+
+proc cybershuttle_tk {} {
+  cybershuttle::main
+  return $cybershuttle::w
+}
