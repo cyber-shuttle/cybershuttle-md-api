@@ -1,0 +1,27 @@
+#!/usr/bin/tclsh
+
+package require http
+package require tls
+
+
+set filename "output.txt"
+set f [open $filename wb]
+
+set token "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzX0dPcDFvM1p6U19ncVZjN1U3M1BNbThsMmxKbmZLRDg1N29tV2RaX0U4In0.eyJqdGkiOiJlNTYxMTg3Yy0zOGViLTRhZmEtOWUyOC05NWU2ZTg1YWI4M2UiLCJleHAiOjE3MTUyNzYxMDYsIm5iZiI6MCwiaWF0IjoxNzE1Mjc0MzA2LCJpc3MiOiJodHRwczovL2lhbS5zY2lnYXAub3JnL2F1dGgvcmVhbG1zL21vbGVjdWxhci1keW5hbWljcyIsImF1ZCI6Im1kLWNsaSIsInN1YiI6IjZmZDI1MWFlLWUzMGUtNGI4Yi1hOTNlLWQyNjExNDM2NzIzYSIsInR5cCI6IkJlYXJlciIsImF6cCI6Im1kLWNsaSIsImF1dGhfdGltZSI6MTcxNTI3MjE1Nywic2Vzc2lvbl9zdGF0ZSI6IjdiZjU2MGM5LWU0OGYtNDY0ZS04MmQ3LTdlZmE1YjY4Mzg3MCIsImFjciI6IjEiLCJjbGllbnRfc2Vzc2lvbiI6ImMzYjdiZDQ0LTdlMjAtNDYxZi04ODI0LTlhYjdiYjJiMTg4YSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL21kLmN5YmVyc2h1dHRsZS5vcmciXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYnJva2VyIjp7InJvbGVzIjpbInJlYWQtdG9rZW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJuYW1lIjoiRGllZ28gQmFycmV0byBHb21lcyIsInByZWZlcnJlZF91c2VybmFtZSI6ImRlYjAwNTRAYXVidXJuLmVkdSIsImdpdmVuX25hbWUiOiJEaWVnbyIsImZhbWlseV9uYW1lIjoiQmFycmV0byBHb21lcyIsImVtYWlsIjoiZGViMDA1NEBhdWJ1cm4uZWR1In0.OkmqbdljT8EV3ZniKZsevZNacwLAPMtHRlGLNgs8oZ3fm6hBo6L0Didbw_qY-0de78WhL5_5-cfrAdjsmdBn0QNQ5pc55nOeoEjsebSzb2geliCRbvMVgnQuHGkpz6l_5dQohdpBiR-NHF2FkrhE0lDUvLnisP4LN3xFD5yHamFuvnuQhym0gkLPPISXR7rNQy6QgzsMA5xWP5ohRwQTocilwuSXJyzbKJJOjp0k9XVsIgfoCXtkxUHEMeDl1lVVXqrf1Ynh57xqD2C9HkBr1D6FY9yluRRh76Slj2YSpneabEmrKmoAVP-cIl94zLXnfsC_nCHbHUKke4QJZVzW-g"
+
+# Define your headers with the token
+set headers [list Authorization "Bearer $token"]
+
+# This is your code, cut-n-pasted with blank lines removed
+http::register https 443 tls::socket
+set url "https://md.cybershuttle.org/sdk/download-file/?data-product-uri=airavata-dp%3A%2F%2Fc24cfa16-e153-4adc-8ef0-6f7b6536a43d"
+set httpreq [http::geturl $url -timeout 30000 -headers $headers -channel $f -binary 1]
+
+if {[http::status $httpreq] eq "ok" && [http::ncode $httpreq] == 200} {
+    puts "Downloaded successfully"
+}
+
+http::cleanup $httpreq
+http::unregister https
+close $f
+
