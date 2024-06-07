@@ -1,245 +1,3 @@
-package provide cybershuttle 0.8
-package require Tk
-package require Ttk
-package require http
-package require tls
-package require json
-
-namespace eval cybershuttle {
-	variable w          ;# handle to main window
-	variable projects
-	variable project
-	variable replicas
-	variable token
-	variable experiments
-	variable experimentId
-	variable experimentFiles
-	variable experimentFileNames
-	variable experimentURL
-	variable psf_files [list]
-    variable traj_files [list]
-    variable out_files [list]
-	variable selected_psf_file
-    variable selected_traj_file
-    variable selected_out_file
-	variable tmpDir /tmp/
-}
-
-
-set myDict2 {
-    item1 "Detail 1" "bla"
-    item2 "Detail 2" "blabla"
-    item3 "Detail 3" "bla"
-    item4 "Detail 4" "blablabla"
-    item5 "Detail 5" "blablablabla"
-}
-
-proc cybershuttle::main {} {
-	variable w
-  global env
-	
-    # Main window
-    set           w [ toplevel .cybershuttle ]
-	wm title     $w "CyberShuttle Interface" ; # Create window
-	wm resizable $w 0 0     				 ; # Prevent resizing
-
-	if {[winfo exists $w] != 1} {
-		raise $w
-
-	} else {
-		wm deiconify $w
-	}
-
- 	# Import the tcl file
-	source /home/dgomes/github/Forest-ttk-theme/forest-light.tcl
-
-	# Set theme using the theme use method
-	ttk::style theme use forest-light
-
-	####################################################################
-    # Token frame
-    ####################################################################
-    ttk::labelframe $w.f1 -text "Connect/Reconnect to CyberShuttle" -relief groove
-    grid   $w.f1 -row 0 -column 0 -sticky nsew -padx 5 -pady 5 
-	
-	# Create a button to read the contents of the text widget
-	ttk::button $w.f1.connect -text "Get token" -command [list cybershuttle::invokeBrowser "https://md.cybershuttle.org/auth/login-desktop/?show-code=true"]
-	grid   $w.f1.connect -row 0 -column 0 -sticky nsew
-
-	# Create a button to read the contents of the text widget
-	ttk::button $w.f1.readToken -text "Apply" -command {cybershuttle::readToken}
-	grid   $w.f1.readToken -row 1 -column 0 -sticky nsew
-
-	# Text field for token
-	text   $w.f1.token -height 3 -width 70 -borderwidth 2 -relief sunken -setgrid true 
-	grid   $w.f1.token -row 0 -rowspan 2 -column 1 -sticky nsew
-
-#	# Create a button to read the contents of the text widget
-#	ttk::button $w.f1.printToken -text "print" -command { puts $::cybershuttle::token }
-#	grid   $w.f1.printToken -row 2 -column 0 -sticky nsew
-	
-	####################################################################
-	# Experiments Treeview
-	####################################################################
-    ttk::labelframe $w.f2 -text "Experiments" -relief groove
-    grid   $w.f2 -row 1 -column 0 -columnspan 2 -sticky nsew -padx 5 -pady 5 
-    
-    ttk::treeview $w.f2.tree -columns {status name description id url} -show headings -height 4
-    grid $w.f2.tree -row 0 -column 0 -sticky nsew
-
-    # Define column headings for the second treeview
-    $w.f2.tree heading status 		-text "Status"
-    $w.f2.tree heading name   		-text "Name"
-    $w.f2.tree heading description 	-text "Description"
-    $w.f2.tree heading id 			-text "id"
-    $w.f2.tree heading url 			-text "url"
-    
-    # Define column properties for the second treeview
-    $w.f2.tree column status 		-width 100 -anchor w
-    $w.f2.tree column name   		-width 200 -anchor w
-    $w.f2.tree column description 	-width 200 -anchor w
-	$w.f2.tree column id 			-width 100  -anchor w
-	$w.f2.tree column url 			-width 0  -anchor w
-
-    # Add scrollbars for the second treeview
-    ttk::scrollbar $w.f2.yscroll2 -orient vertical   -command "$w.f2.tree yview"
-    ttk::scrollbar $w.f2.xscroll2 -orient horizontal -command "$w.f2.tree xview"
-    $w.f2.tree configure -yscroll "$w.f2.yscroll2 set" -xscroll "$w.f2.xscroll2 set"
-    grid $w.f2.yscroll2 -row 0 -column 1 -sticky ns
-    grid $w.f2.xscroll2 -row 1 -column 0 -sticky ew
-
-    # Bind the selection event to a procedure
-    bind $w.f2.tree <<TreeviewSelect>> {cybershuttle::show_selected_experiment}
-
-	####################################################################
-	# Experiments Actions
-	####################################################################
-    ttk::labelframe $w.f3 -text "Experiment Actions" -relief groove
-    grid $w.f3 -row 2 -column 0 -columnspan 2 -sticky nsew -padx 5 -pady 5
-
-    # Button to update the experiments treeview
-    #ttk::button $w.f3.updateBtn -text "List Experiments" -command [list cybershuttle::update_experiments ]
-    ttk::button $w.f3.updateBtn -text "List Experiments" -command [list cybershuttle::listExperiments ]
-    grid $w.f3.updateBtn -row 0 -column 0 -pady 5
-
-    # Button to Download the selected experiment from the treeview
-    #ttk::button $w.f3.downloadBtn -text "Download Selected" -command [list cybershuttle::download_experiment ]
-    ttk::button $w.f3.downloadBtn -text "Download Selected" -command [list cybershuttle::select_download_directory ]
-    grid $w.f3.downloadBtn -row 0 -column 1 -pady 5
-
-    # Button to Download the selected experiment from the treeview
-    ttk::button $w.f3.cybershuttledBtn -text "Show in Gateway" -command {cybershuttle::invokeBrowser "$cybershuttle::experimentURL"}
-    grid $w.f3.cybershuttledBtn -row 0 -column 2 -pady 5
-
-    # Button to Download the selected experiment from the treeview
-    ttk::button $w.f3.listBtn -text "List files" -command [list cybershuttle::listFiles ]
-    grid $w.f3.listBtn -row 0 -column 3 -pady 5
-
-    # Button to Download the selected experiment from the treeview
-    ttk::button $w.f3.downloadListBtn -text "Download file" -command [list cybershuttle::downloadFile ]
-    grid $w.f3.downloadListBtn -row 0 -column 4 -pady 5
-
-    # Statusbar: Label to show the selected item in the second treeview
-    ttk::label $w.f3.selectedLbl -text "Selected Item: None"
-    grid $w.f3.selectedLbl -row 1 -column 0 -columnspan 4  -sticky w -padx 5 -pady 5
-        
-    
-	####################################################################
-	# Experiment files
-	####################################################################
-	ttk::labelframe $w.f4 -text "Experiment Files" -relief groove
-    grid $w.f4 -row 3 -column 0 -columnspan 2 -sticky nsew -padx 5 -pady 5
-
-	ttk::treeview $w.f4.tree -columns {name size url} -show headings -height 4
-    grid $w.f4.tree -row 0 -column 0 -sticky nsew
-
-    # Define column headings for the second treeview
-    $w.f4.tree heading name   		-text "Name"
-    $w.f4.tree heading size   		-text "Size"
-    $w.f4.tree heading url 			-text "url"
-    
-    # Define column properties for the second treeview
-    $w.f4.tree column name   		-width 200 -anchor w
-    $w.f4.tree column size   		-width 200 -anchor w
-    $w.f4.tree column url 			-width 200 -anchor w
-
-    # Add scrollbars for the second treeview
-    ttk::scrollbar $w.f4.yscroll2 -orient vertical   -command "$w.f4.tree yview"
-    ttk::scrollbar $w.f4.xscroll2 -orient horizontal -command "$w.f4.tree xview"
-    $w.f4.tree configure -yscroll "$w.f4.yscroll2 set" -xscroll "$w.f4.xscroll2 set"
-    grid $w.f4.yscroll2 -row 0 -column 1 -sticky ns
-    grid $w.f4.xscroll2 -row 1 -column 0 -sticky ew
-
-    # Bind the selection event to a procedure
-    #bind $w.f4.tree <<TreeviewSelect>> {cybershuttle::show_selected_file}
-
-	####################################################################
-	# VMD interaction
-	####################################################################
-    ttk::labelframe $w.f5 -text "Load on VMD" -relief groove
-    grid $w.f5 -row 4 -column 0 -columnspan 2 -sticky nsew -padx 5 -pady 5
-
-	# Create labels for dropdown menus
-	ttk::label  $w.f5.label1 -text "Topology:"
-	ttk::label  $w.f5.label2 -text "Coord/Traj:"
-	ttk::label  $w.f5.label3 -text "out/log:"
-
-    # Grid layout for labels
-	grid $w.f5.label1 -row 0 -column 0 -sticky "w" -padx 5 -pady 5
-	grid $w.f5.label2 -row 0 -column 1 -sticky "w" -padx 5 -pady 5
-	grid $w.f5.label3 -row 0 -column 2 -sticky "w" -padx 5 -pady 5
-
-	# Create dropdown menus
-	ttk::combobox $w.f5.psf_menu  -values $cybershuttle::psf_files  -width 20 -textvariable cybershuttle::selected_psf_file
-	ttk::combobox $w.f5.traj_menu -values $cybershuttle::traj_files -width 20 -textvariable cybershuttle::selected_traj_file
-	ttk::combobox $w.f5.out_menu  -values $cybershuttle::out_files  -width 20 -textvariable cybershuttle::selected_out_file
-	
-	# Grid layout for dropdown menus
-	grid $w.f5.psf_menu  -row 1 -column 0 -sticky "w" -padx 5 -pady 5
-	grid $w.f5.traj_menu -row 1 -column 1 -sticky "w" -padx 5 -pady 5
-	grid $w.f5.out_menu  -row 1 -column 2 -sticky "w" -padx 5 -pady 5
-
-	# TEMPORARY:
-	# Create labels to display selected files
-	ttk::label $w.f5.selected_psf_file_label  -text ""
-	ttk::label $w.f5.selected_traj_file_label -text ""
-	ttk::label $w.f5.selected_out_file_label  -text ""
-
-	# Grid layout for selected file labels
-	grid $w.f5.selected_psf_file_label  -row 2 -column 0 -sticky "w" -padx 5 -pady 5
-	grid $w.f5.selected_traj_file_label -row 2 -column 1 -sticky "w" -padx 5 -pady 5
-	grid $w.f5.selected_out_file_label  -row 2 -column 2 -sticky "w" -padx 5 -pady 5
-    
-	# Bind selection events to update labels
-	bind $w.f5.psf_menu  <<ComboboxSelected>> { cybershuttle::update_selected_file_labels }
-	bind $w.f5.traj_menu <<ComboboxSelected>> { cybershuttle::update_selected_file_labels }
-	bind $w.f5.out_menu  <<ComboboxSelected>> { cybershuttle::update_selected_file_labels }
-
-	ttk::button $w.f5.btn1   -text "Load" -command cybershuttle::load_in_vmd
-	grid $w.f5.btn1   -row 1 -column 3 -sticky "w" -padx 5 -pady 5
-
-
-
-
-
-
-    ttk::labelframe $w.f6 -text "Load ONLY selection" -relief groove
-    grid   $w.f6 -row 5 -column 0 -sticky nsew -padx 5 -pady 5 
-		# Current window/frame
-		set wc $w.f6
-		
-		set item 0 ; set row 0
-		ttk::label  $wc.l$item -text "Selection"
-		ttk::entry  $wc.e$item  -width 60
-		ttk::button $wc.b$item -text "Load"
-		
-		grid $wc.l$item -row $row -column 2 -sticky nsew -padx 5 -pady 5 	
-		grid $wc.e$item -row $row -column 3 -columnspan 5 -sticky nsew -padx 5 -pady 5 	
-		grid $wc.b$item -row $row -column 9 -sticky nsew -padx 5 -pady 5 	
-
-
-}
-
 
 
 # Function to update selected file labels
@@ -627,8 +385,9 @@ proc cybershuttle::load_in_vmd {} {
     set psf  [file join $tmpdir $cybershuttle::selected_psf_file ]
 	set traj [file join $tmpdir $cybershuttle::selected_traj_file ]
     mol new $psf
-	mol addfile $traj waitfor all
-  mol modselect 0 0 protein
+	mol addfile $traj waitfor all 
+
+ mol modselect 0 0 protein
  mol modstyle 0 0 NewCartoon 0.300000 10.000000 4.100000 0
  mol modcolor 0 0 Structure
  mol color Structure
@@ -640,8 +399,54 @@ proc cybershuttle::load_in_vmd {} {
  mol modcolor 1 0 Name
  color Display Background white
  mol modstyle 1 0 Points 2.000000
+}
 
 
+proc cybershuttle::set_config {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Configuration" -filetypes {{NAMD .conf} {NAMD .namd}}
+}
+
+proc cybershuttle::set_psf {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Topology" -filetypes {{Topology .psf}}
+}
+
+proc cybershuttle::set_structure {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $wc -initialdir [pwd] -title "Structure" -filetypes {{Structure (PDB)} {.pdb}}
+}
+
+proc cybershuttle::set_velocities {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Coordinates" -filetypes {{Coordinates (.coor/.pdb)} {.coor .pdb}}
+}
+
+proc cybershuttle::set_velocities {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Velocities" -filetypes {{Velocities (.vel)} {.vel}}
+}
+
+proc cybershuttle::set_extended {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Extended" -filetypes {{Extended (.xsc)} {.xsc}}
+}		
+
+proc cybershuttle::set_extended {parent field} {
+	set $field %f
+	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Restraints" -filetypes {{Restraints (.pdb)} {.pdb}}
+}		
+
+
+
+set types {
+	{{NAMD configuration} {.conf .namd}}
+	{{Topology (PSF)} {.psf}}
+	{{Structure (PDB)} {.pdb}}
+	{{Coordinates (.coor/.pdb)} {.coor .pdb}}
+	{{Velocities (.vel)} {.vel}}
+	{{Extended (.xsc)} {.xsc}}
+	{{Restraints (.pdb)} {.pdb}}
 }
 
 
@@ -658,12 +463,4 @@ proc test {} {
 		}
 		puts $out
 	}
-}
-
-
-#cybershuttle::main
-
-proc cybershuttle_tk {} {
-  cybershuttle::main
-  return $cybershuttle::w
 }
