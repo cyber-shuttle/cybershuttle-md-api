@@ -46,7 +46,13 @@ source CyberShuttle_submit.tcl
 source CyberShuttle_functions.tcl
 ```
 
-## Get the token!
+## Using the GUI
+To communicate securely with CyberShuttle you need a session token. Click on **Get token**. A webBrowser will open and you'll be guided to login using your ACCESS our University account. Once done, copy the token and click on **Apply**
+
+### CyberShuttle View
+### CyberShuttle Submit
+ 
+
 
 
 
