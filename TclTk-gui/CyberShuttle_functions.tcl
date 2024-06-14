@@ -579,15 +579,26 @@ proc finishUpload {uploadLocation token} {
 
 
 proc cybershuttlesubmit::submit {} {
-	cybershuttlesubmit::upload_files
-	cybershuttlesubmit::create_experiment
+	 cybershuttlesubmit::upload_files
+	 cybershuttlesubmit::create_experiment
 }
 
 proc cybershuttlesubmit::upload_files {} {
 	variable token
 	variable url_list
-	set directory "/home/dgomes/cybershuttle_demo/SciencePull/replicas/pull"
-	set fileList [glob -nocomplain -types f $directory/*]
+	variable namdConfig 
+	variable namdPSF
+	variable namdPDB
+	variable namdCOR
+	variable namdVEL
+	variable namdXSC 
+	variable namdRES
+	variable namdPRM
+	
+	#set directory "/home/dgomes/cybershuttle_demo/SciencePull/replicas/pull"
+	#set directory [file join [pwd] pull ] 	
+	#set fileList [glob -nocomplain -types f $directory/*]
+	set fileList [list $namdConfig $namdPSF $namdPDB $namdCOR $namdVEL $namdXSC $namdRES $namdPRM]
 
 	set url_list {} 
 	set jsonfile [open filePaths.json w]

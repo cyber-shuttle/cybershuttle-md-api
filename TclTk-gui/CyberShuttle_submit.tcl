@@ -31,7 +31,6 @@ namespace eval cybershuttlesubmit {
 	variable namdPDB
 	variable namdCOR
 	variable namdVEL
-	variable namdPRM
 	variable namdXSC 
 	variable namdRES
 	variable namdPRM
