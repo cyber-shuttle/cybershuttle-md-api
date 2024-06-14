@@ -1,7 +1,7 @@
 
 
 # Function to update selected file labels
-proc cybershuttle::update_selected_file_labels {} {
+proc cybershuttlesubmit::update_selected_file_labels {} {
     variable selected_psf_file
     variable selected_traj_file
     variable selected_out_file
@@ -9,23 +9,23 @@ proc cybershuttle::update_selected_file_labels {} {
     # Check if a variable is assigned
 	if {[info exists selected_psf_file]} {
 		set psf_file $selected_psf_file
-		.cybershuttle.f5.selected_psf_file_label config -text "Topology: $psf_file"
+		.cybershuttlesubmit.f5.selected_psf_file_label config -text "Topology: $psf_file"
 	}
 	
 	if {[info exists selected_traj_file]} {
 		set traj_file $selected_traj_file
-		.cybershuttle.f5.selected_traj_file_label config -text "Coord/Traj: $traj_file"
+		.cybershuttlesubmit.f5.selected_traj_file_label config -text "Coord/Traj: $traj_file"
 	}
 	
 	if {[info exists selected_out_file]} {
 		set out_file $selected_out_file
-		.cybershuttle.f5.selected_out_file_label config -text "Out/Log File: $out_file"
+		.cybershuttlesubmit.f5.selected_out_file_label config -text "Out/Log File: $out_file"
 	}
     
 }
 
 
-proc cybershuttle::listFiles {} {
+proc cybershuttlesubmit::listFiles {} {
 	variable token
 	variable experimentId
 	variable experimentFiles
@@ -35,7 +35,7 @@ proc cybershuttle::listFiles {} {
 
 	# This is your code, cut-n-pasted with blank lines removed
 	http::register https 443 tls::socket
-	set url "https://md.cybershuttle.org/api/experiment-storage/${experimentId}/"
+	set url "https://md.cybershuttlesubmit.org/api/experiment-storage/${experimentId}/"
 	set httpreq [http::geturl $url -timeout 30000 -headers $headers]
 	set status [http::status $httpreq]
 	set answer [http::data $httpreq]
@@ -47,7 +47,7 @@ proc cybershuttle::listFiles {} {
 	
 	
 	# Clear the second treeview
-    .cybershuttle.f4.tree  delete [.cybershuttle.f4.tree children {}]
+    .cybershuttlesubmit.f4.tree  delete [.cybershuttlesubmit.f4.tree children {}]
 	
 	if { ($status == "ok") && ( [ regexp {failed} $answer ] == 0 ) } {
 		# Parse the JSON data
@@ -68,18 +68,18 @@ proc cybershuttle::listFiles {} {
 			set n  [dict get $f name]
 			set s  [dict get $f size]
 			set u  [dict get $f downloadURL]
-			.cybershuttle.f4.tree insert "" end -values [list $n $s $u]
+			.cybershuttlesubmit.f4.tree insert "" end -values [list $n $s $u]
 			lappend experimentFileNames $n
 		}
 		puts "####\nFilenames: ${experimentFileNames}\n###"
 		
-		cybershuttle::update_dropdown
+		cybershuttlesubmit::update_dropdown
 		
 	} else { tk_messageBox -title "Expired Token" -icon error -message "Your CyberShuttle Token is expired. Please get a new one and try again." }
 	
 }
 
-proc cybershuttle::listExperiments {} {
+proc cybershuttlesubmit::listExperiments {} {
 	variable token
 	variable experiments
 
@@ -88,7 +88,7 @@ proc cybershuttle::listExperiments {} {
 
 	# This is your code, cut-n-pasted with blank lines removed
 	http::register https 443 tls::socket
-	set url "https://md.cybershuttle.org/api/experiment-search/?limit=100&offset=0"
+	set url "https://md.cybershuttlesubmit.org/api/experiment-search/?limit=100&offset=0"
 	set httpreq [http::geturl $url -timeout 30000 -headers $headers]
 	set status [http::status $httpreq]
 	set answer [http::data $httpreq]
@@ -99,7 +99,7 @@ proc cybershuttle::listExperiments {} {
 	puts $answer
 	
 	# Clear the second treeview
-    .cybershuttle.f2.tree  delete [.cybershuttle.f2.tree children {}]
+    .cybershuttlesubmit.f2.tree  delete [.cybershuttlesubmit.f2.tree children {}]
 
 	if { ($status == "ok") && ( [ regexp {failed} $answer ] == 0 ) } {
 		# Parse the JSON data
@@ -123,7 +123,7 @@ proc cybershuttle::listExperiments {} {
 			set d  [dict get $result description]
 			set id [dict get $result experimentId]
 			set u  [dict get $result url]
-			.cybershuttle.f2.tree insert "" end -values [list $s $n $d $id $u]
+			.cybershuttlesubmit.f2.tree insert "" end -values [list $s $n $d $id $u]
 		}
 	} else { tk_messageBox -title "Expired Token" -icon error -message "Your CyberShuttle Token is expired. Please get a new one and try again." }
 }
@@ -140,7 +140,7 @@ proc listProjects {token} {
 
     # This is your code, cut-n-pasted with blank lines removed
     http::register https 443 tls::socket
-    set url "https://md.cybershuttle.org/api/projects/"
+    set url "https://md.cybershuttlesubmit.org/api/projects/"
     set httpreq [http::geturl $url -timeout 30000 -headers $headers]
     set status [http::status $httpreq]
     set answer [http::data $httpreq]
@@ -159,7 +159,7 @@ proc listProjects {token} {
 }
 
 # Multi-platform solution from http://wiki.tcl.tk/557
-proc cybershuttle::invokeBrowser {url} {
+proc cybershuttlesubmit::invokeBrowser {url} {
   # open is the OS X equivalent to xdg-open on Linux, start is used on Windows
   set commands {xdg-open open start}
   foreach browser $commands {
@@ -183,26 +183,26 @@ proc cybershuttle::invokeBrowser {url} {
 
 
 # Function to read the contents of the text widget
-proc cybershuttle::readToken {} {
-    set cybershuttle::token [ .cybershuttle.f1.token get 1.0 end ]
-    puts "Contents of the text field:\n${::cybershuttle::token}"
+proc cybershuttlesubmit::readToken {} {
+    set cybershuttlesubmit::token [ .cybershuttlesubmit.f1.token get 1.0 end ]
+    puts "Contents of the text field:\n${::cybershuttlesubmit::token}"
     
 }
 
 
 
 
-proc cybershuttle::populate_experiments {} {
+proc cybershuttlesubmit::populate_experiments {} {
     global myDict2
     foreach {item detail} $myDict2 {
-        .cybershuttle.f2.tree insert "" end -values [list $item $detail]
+        .cybershuttlesubmit.f2.tree insert "" end -values [list $item $detail]
     }
 }
 
-proc cybershuttle::update_experiments {} {
+proc cybershuttlesubmit::update_experiments {} {
     global myDict2
     # Clear the second treeview
-    .cybershuttle.f2.tree  delete [.cybershuttle.f2.tree children {}]
+    .cybershuttlesubmit.f2.tree  delete [.cybershuttlesubmit.f2.tree children {}]
 
     # Update the second dictionary with new data
     set myDict2 {
@@ -215,54 +215,54 @@ proc cybershuttle::update_experiments {} {
     }
 
     # Repopulate the second treeview with updated dictionary data
-    cybershuttle::populate_experiments
+    cybershuttlesubmit::populate_experiments
 }
 
-proc cybershuttle::show_selected_experiment {} {
+proc cybershuttlesubmit::show_selected_experiment {} {
 	variable experimentURL
 	variable experimentId
 	
 	# Replace this crap by dictionary with all about an experiment.
 	
-    set selectedItem [.cybershuttle.f2.tree selection]
+    set selectedItem [.cybershuttlesubmit.f2.tree selection]
 
     if {[llength $selectedItem] > 0} {
         set itemId [lindex $selectedItem 0]
-        set itemValues [.cybershuttle.f2.tree item $itemId -values]
+        set itemValues [.cybershuttlesubmit.f2.tree item $itemId -values]
         set status [lindex $itemValues 0]
         set name [lindex $itemValues 1]
         set detail [lindex $itemValues 2]
         set experimentId [lindex $itemValues 3]
         set experimentURL [string map {api workspace} [lindex $itemValues 4] ]
         
-        .cybershuttle.f3.selectedLbl configure -text "Selected: $name"
+        .cybershuttlesubmit.f3.selectedLbl configure -text "Selected: $name"
     } else {
-        .cybershuttle.f3.selectedLbl configure -text "Selected: None"
+        .cybershuttlesubmit.f3.selectedLbl configure -text "Selected: None"
     }
 }
 
-proc cybershuttle::select_download_directory {} {   
+proc cybershuttlesubmit::select_download_directory {} {   
     set dir [tk_chooseDirectory -title "Select Download Destination"]
     if {$dir != ""} {
         puts "Selected directory: $dir"
-        cybershuttle::download_experiment $dir
+        cybershuttlesubmit::download_experiment $dir
     }
 }
 
-proc cybershuttle::download_experiment {dir} {
+proc cybershuttlesubmit::download_experiment {dir} {
     variable experiments
 
 	puts "Launching script in directory: $dir"
 
     # Add your script execution code here
-    set selectedItem [.cybershuttle.f2.tree selection]
+    set selectedItem [.cybershuttlesubmit.f2.tree selection]
 
     if {[llength $selectedItem] > 0} {
         set itemId [lindex $selectedItem 0]
-        set itemValues [.cybershuttle.f2.tree item $itemId -values]
+        set itemValues [.cybershuttlesubmit.f2.tree item $itemId -values]
         set experimentId [lindex $itemValues 3]        
-		set url "https://md.cybershuttle.org/sdk/download-experiment-dir/${experimentId}/"
-		cybershuttle::rundownloadFile $dir $url "${experimentId}.zip"
+		set url "https://md.cybershuttlesubmit.org/sdk/download-experiment-dir/${experimentId}/"
+		cybershuttlesubmit::rundownloadFile $dir $url "${experimentId}.zip"
 		puts "
 # Downloading url: 
 $url
@@ -272,20 +272,20 @@ $dir/${experimentId}.zip"
 }
 
 
-proc cybershuttle::downloadFile {} {   
+proc cybershuttlesubmit::downloadFile {} {   
 	set dir [tk_chooseDirectory -title "Select Download Destination"]
     if {$dir != ""} {
         puts "Selected directory: $dir"
         # Add your script execution code here
-	    set selectedItem [.cybershuttle.f4.tree selection]
+	    set selectedItem [.cybershuttlesubmit.f4.tree selection]
 
     	if {[llength $selectedItem] > 0} {
         	set itemId [lindex $selectedItem 0]
-        	set itemValues [.cybershuttle.f4.tree item $itemId -values]
+        	set itemValues [.cybershuttlesubmit.f4.tree item $itemId -values]
         	set name [lindex $itemValues 0]        
 			# set url [lindex $itemValues 2]
 			set url [string map {download download-file} [lindex $itemValues 2] ]        
-			cybershuttle::rundownloadFile $dir $url $name
+			cybershuttlesubmit::rundownloadFile $dir $url $name
 			puts "
 # Downloading url: 
 $url
@@ -297,7 +297,7 @@ ${dir}/${name}"
 }
 
 
-proc cybershuttle::rundownloadFile {dir url filename} {
+proc cybershuttlesubmit::rundownloadFile {dir url filename} {
 	variable token
 	set f [open [ file join $dir $filename ] wb]
 
@@ -327,25 +327,25 @@ proc toMB {n} {
 }
 
 
-proc cybershuttle::update_dropdown {} {
+proc cybershuttlesubmit::update_dropdown {} {
 	#variable psf_files
     #variable traj_files
     #variable out_files
     variable experimentFileNames
     
-	#set psf_files  [cybershuttle::filter_files "${experimentFileNames}" [list .psf ]]
-	#set traj_files [cybershuttle::filter_files "${experimentFileNames}" [list .pdb .coor .dcd] ]
-	#set out_files  [cybershuttle::filter_files "${experimentFileNames}" [list .out .log ]]
+	#set psf_files  [cybershuttlesubmit::filter_files "${experimentFileNames}" [list .psf ]]
+	#set traj_files [cybershuttlesubmit::filter_files "${experimentFileNames}" [list .pdb .coor .dcd] ]
+	#set out_files  [cybershuttlesubmit::filter_files "${experimentFileNames}" [list .out .log ]]
 	
 	# Create dropdown menus
-	.cybershuttle.f5.psf_menu  configure -values [cybershuttle::filter_files "${experimentFileNames}" [list .psf ]]
-	.cybershuttle.f5.traj_menu configure -values [cybershuttle::filter_files "${experimentFileNames}" [list .pdb .coor .dcd] ]
-	.cybershuttle.f5.out_menu  configure -values [cybershuttle::filter_files "${experimentFileNames}" [list .out .log .stdout ]]
+	.cybershuttlesubmit.f5.psf_menu  configure -values [cybershuttlesubmit::filter_files "${experimentFileNames}" [list .psf ]]
+	.cybershuttlesubmit.f5.traj_menu configure -values [cybershuttlesubmit::filter_files "${experimentFileNames}" [list .pdb .coor .dcd] ]
+	.cybershuttlesubmit.f5.out_menu  configure -values [cybershuttlesubmit::filter_files "${experimentFileNames}" [list .out .log .stdout ]]
 	
 }
 
 # Function to filter files by extension
-proc cybershuttle::filter_files {file_list extension} {
+proc cybershuttlesubmit::filter_files {file_list extension} {
     set filtered_files {}
     foreach file $file_list {
 		foreach ext $extension {
@@ -357,17 +357,17 @@ proc cybershuttle::filter_files {file_list extension} {
     return $filtered_files
 }
 
-proc cybershuttle::load_in_vmd {} {
+proc cybershuttlesubmit::load_in_vmd {} {
 	variable selected_psf_file
     variable selected_traj_file
 
 	set file_url {}
-	foreach f $cybershuttle::experimentFiles { 
+	foreach f $cybershuttlesubmit::experimentFiles { 
 	    dict set file_url [dict get $f name] [dict get $f downloadURL]
 	}
 
-	set url_psf    [ dict get $file_url $cybershuttle::selected_psf_file ]
-	set url_traj   [ dict get $file_url $cybershuttle::selected_traj_file ]
+	set url_psf    [ dict get $file_url $cybershuttlesubmit::selected_psf_file ]
+	set url_traj   [ dict get $file_url $cybershuttlesubmit::selected_traj_file ]
 
     # BugFix
 	set url_psf  [string map {download download-file} $url_psf  ]
@@ -376,14 +376,14 @@ proc cybershuttle::load_in_vmd {} {
     set tmpdir "/tmp"
 
 	# Download Topology (PSF)
-	cybershuttle::rundownloadFile $tmpdir $url_psf [file join $cybershuttle::selected_psf_file] 
+	cybershuttlesubmit::rundownloadFile $tmpdir $url_psf [file join $cybershuttlesubmit::selected_psf_file] 
 	
 	# Download Coordinates/Trajectory (.PDB,.COOR,.DCD)
-	cybershuttle::rundownloadFile $tmpdir $url_traj [file join $cybershuttle::selected_traj_file] 
+	cybershuttlesubmit::rundownloadFile $tmpdir $url_traj [file join $cybershuttlesubmit::selected_traj_file] 
 
 	# Load on VMD
-    set psf  [file join $tmpdir $cybershuttle::selected_psf_file ]
-	set traj [file join $tmpdir $cybershuttle::selected_traj_file ]
+    set psf  [file join $tmpdir $cybershuttlesubmit::selected_psf_file ]
+	set traj [file join $tmpdir $cybershuttlesubmit::selected_traj_file ]
     mol new $psf
 	mol addfile $traj waitfor all 
 
@@ -401,57 +401,57 @@ proc cybershuttle::load_in_vmd {} {
  mol modstyle 1 0 Points 2.000000
 }
 
-
-proc cybershuttle::set_config {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Configuration" -filetypes {{NAMD .conf} {NAMD .namd}}
+# Define the command to change the text in the entry widget
+proc cybershuttlesubmit::changeEntry {} {
+    global entry
+    $entry delete 0 end
+    $entry insert 0 "Button Clicked"
 }
 
-proc cybershuttle::set_psf {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Topology" -filetypes {{Topology .psf}}
+proc cybershuttlesubmit::set_config {parent field} {
+	variable namdConfig 
+	set namdConfig [tk_getOpenFile -parent $parent -initialdir [pwd] -title "Configuration" -filetypes {{NAMD .conf} {NAMD .namd}} ] 
 }
 
-proc cybershuttle::set_structure {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $wc -initialdir [pwd] -title "Structure" -filetypes {{Structure (PDB)} {.pdb}}
+proc cybershuttlesubmit::set_psf {parent field} {
+	variable namdPSF
+	set namdPSF [ tk_getOpenFile -parent $parent -initialdir [pwd] -title "Topology" -filetypes {{Topology .psf}} ]	
 }
 
-proc cybershuttle::set_velocities {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Coordinates" -filetypes {{Coordinates (.coor/.pdb)} {.coor .pdb}}
+proc cybershuttlesubmit::set_structure {parent field} {
+	variable namdPDB
+	set namdPDB [ tk_getOpenFile -parent $parent -initialdir [pwd] -title "Structure" -filetypes {{Structure .pdb}} ]
 }
 
-proc cybershuttle::set_velocities {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Velocities" -filetypes {{Velocities (.vel)} {.vel}}
+proc cybershuttlesubmit::set_coordinates {parent field} {
+	variable namdCOR
+	set namdCOR [ tk_getOpenFile -parent $parent -initialdir [pwd] -title "Coordinates" -filetypes {{Coordinates .coor} {Coordinates .pdb}} ]
 }
 
-proc cybershuttle::set_extended {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Extended" -filetypes {{Extended (.xsc)} {.xsc}}
+proc cybershuttlesubmit::set_velocities {parent field} {
+	variable namdVEL
+	set namdVEL [ tk_getOpenFile -parent $parent -initialdir [pwd] -title "Velocities" -filetypes {{Velocities .vel}} ]
+}
+
+proc cybershuttlesubmit::set_extended {parent field} {
+	variable namdXSC
+	set namdXSC [ tk_getOpenFile -parent $parent -initialdir [pwd] -title "Extended" -filetypes {{Extended .xsc}} ]
+}
+
+proc cybershuttlesubmit::set_restraints {parent field} {
+	variable namdRES
+	set namdRES [ tk_getOpenFile -parent $parent -initialdir [pwd] -title "Restraints" -filetypes {{Restraints .pdb}} ]
 }		
 
-proc cybershuttle::set_extended {parent field} {
-	set $field %f
-	tk_getOpenFile -parent $parent -initialdir [pwd] -title "Restraints" -filetypes {{Restraints (.pdb)} {.pdb}}
+proc cybershuttlesubmit::set_parameters {parent field} {
+	variable namdPRM
+	set namdPRM [ tk_getOpenFile -parent $parent -initialdir [pwd] -multiple true -title "Parameters" -filetypes {{Parameters .prm} {Parameters .str}} ]
 }		
 
-
-
-set types {
-	{{NAMD configuration} {.conf .namd}}
-	{{Topology (PSF)} {.psf}}
-	{{Structure (PDB)} {.pdb}}
-	{{Coordinates (.coor/.pdb)} {.coor .pdb}}
-	{{Velocities (.vel)} {.vel}}
-	{{Extended (.xsc)} {.xsc}}
-	{{Restraints (.pdb)} {.pdb}}
-}
 
 
 proc test {} {
-	# Go to https://md.cybershuttle.org/auth/login-desktop/?show-code=true
+	# Go to https://md.cybershuttlesubmit.org/auth/login-desktop/?show-code=true
 	set token "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzX0dPcDFvM1p6U19ncVZjN1U3M1BNbThsMmxKbmZLRDg1N29tV2RaX0U4In0.eyJqdGkiOiI2NzgyNjA0OC04NWUwLTQ5ZDgtOTcyYi1kOTE3MjZkMGJmN2UiLCJleHAiOjE3MTc0NjIwNzUsIm5iZiI6MCwiaWF0IjoxNzE3NDYwMjc1LCJpc3MiOiJodHRwczovL2lhbS5zY2lnYXAub3JnL2F1dGgvcmVhbG1zL21vbGVjdWxhci1keW5hbWljcyIsImF1ZCI6InBnYSIsInN1YiI6IjZmZDI1MWFlLWUzMGUtNGI4Yi1hOTNlLWQyNjExNDM2NzIzYSIsInR5cCI6IkJlYXJlciIsImF6cCI6InBnYSIsImF1dGhfdGltZSI6MTcxNzQ2MDI3NSwic2Vzc2lvbl9zdGF0ZSI6ImI4MzhhMjUxLTYwYmUtNDcyYy1hODhmLTdiMzJhNGUwMThmYiIsImFjciI6IjEiLCJjbGllbnRfc2Vzc2lvbiI6ImI3OWU2NDFiLTQwYmYtNDBlNi1iZWMxLWM2YzFlNWFkYzYxOSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL21kLmN5YmVyc2h1dHRsZS5vcmciXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYnJva2VyIjp7InJvbGVzIjpbInJlYWQtdG9rZW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJuYW1lIjoiRGllZ28gQmFycmV0byBHb21lcyIsInByZWZlcnJlZF91c2VybmFtZSI6ImRlYjAwNTRAYXVidXJuLmVkdSIsImdpdmVuX25hbWUiOiJEaWVnbyIsImZhbWlseV9uYW1lIjoiQmFycmV0byBHb21lcyIsImVtYWlsIjoiZGViMDA1NEBhdWJ1cm4uZWR1In0.QpLvPhuww9dCFiQYnw2Fm8kM-wMw_LPqKbRwJLkCvb-a6QRLiA_nb8i-4iXMyP8Uqb1T-rFnKp-Net53vXOe_bIqGNSZ2AY9nmNR5t7GGbPVarehp2OIgPchGXGgSZwuz25SPL0aTEzOxtFINPU1qeGE21App2sBAzUDc8zgkLeqjd_FKUpxDT4xjSRhbSvqFaGSoEH0y1VQHBkSTVOlR8jhksRLBE9TVfgQu9yvRPU0AUcYxx4TXPbQ0clgvx55SG9BYNATDpnDrWyykMK5Xip-ZMccTejb56iR_pEarx2Eh0_oUvlSnRIwhtKSZdinYlfhO1CDitl554jaohF_dg"
 
 	set projects [listProjects $token]

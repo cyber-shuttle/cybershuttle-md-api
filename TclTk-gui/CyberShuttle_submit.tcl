@@ -1,14 +1,14 @@
 lappend auto_path /home/dgomes/software/vmd_dependencies/tcltls/lib/tcltls1.7.22/
 lappend auto_path /home/dgomes/software/vmd-1.9.4.58dgomes/lib/plugins/noarch/tcl/json1.0/
 
-package provide cybershuttle 0.8
+package provide cybershuttlesubmit 0.8
 package require Tk
 package require Ttk
 package require http
 package require tls
 package require json
 
-namespace eval cybershuttle {
+namespace eval cybershuttlesubmit {
 	variable w          ;# handle to main window
 	variable projects
 	variable project
@@ -26,14 +26,24 @@ namespace eval cybershuttle {
     variable selected_traj_file
     variable selected_out_file
 	variable tmpDir /tmp/
+	variable namdConfig 
+	variable namdPSF
+	variable namdPDB
+	variable namdCOR
+	variable namdVEL
+	variable namdPRM
+	variable namdXSC 
+	variable namdRES
+	variable namdPRM
 }
 
-proc cybershuttle::main {} {
+proc cybershuttlesubmit::main {} {
 	variable w
-    global env
+
+  global env
 	
     # Main window
-    set           w [ toplevel .cybershuttle ]
+  set           w [ toplevel .cybershuttlesubmit ]
 	wm title     $w "CyberShuttle Interface" ; # Create window
 	wm resizable $w 0 0     				 ; # Prevent resizing
 
@@ -45,10 +55,10 @@ proc cybershuttle::main {} {
 	}
 	
 	# Import the tcl file
-	source /home/dgomes/github/Forest-ttk-theme/forest-light.tcl
+	#source /home/dgomes/github/Forest-ttk-theme/forest-light.tcl
 
 	# Set theme using the theme use method
-	ttk::style theme use forest-light
+	#ttk::style theme use forest-light
 
 	
 	####################################################################
@@ -58,11 +68,11 @@ proc cybershuttle::main {} {
     grid   $w.f1 -row 0 -column 0 -sticky nsew -padx 5 -pady 5 
 	
 	# Create a button to read the contents of the text widget
-	ttk::button $w.f1.connect -text "Get token" -command [list cybershuttle::invokeBrowser "https://md.cybershuttle.org/auth/login-desktop/?show-code=true"]
+	ttk::button $w.f1.connect -text "Get token" -command [list cybershuttlesubmit::invokeBrowser "https://md.cybershuttle.org/auth/login-desktop/?show-code=true"]
 	grid   $w.f1.connect -row 0 -column 0 -sticky nsew
 
 	# Create a button to read the contents of the text widget
-	ttk::button $w.f1.readToken -text "Apply" -command {cybershuttle::readToken}
+	ttk::button $w.f1.readToken -text "Apply" -command {cybershuttlesubmit::readToken}
 	grid   $w.f1.readToken -row 1 -column 0 -sticky nsew
 
 	# Text field for token
@@ -70,7 +80,7 @@ proc cybershuttle::main {} {
 	grid   $w.f1.token -row 0 -rowspan 2 -column 1 -sticky nsew
 
 #	# Create a button to read the contents of the text widget
-#	ttk::button $w.f1.printToken -text "print" -command { puts $::cybershuttle::token }
+#	ttk::button $w.f1.printToken -text "print" -command { puts $::cybershuttlesubmit::token }
 #	grid   $w.f1.printToken -row 2 -column 0 -sticky nsew
 	
 	
@@ -81,11 +91,11 @@ proc cybershuttle::main {} {
 		set wc $w.f2
 		
 		set item 0 ; set row 0 
-		ttk::label  $wc.l$row -text "Configuration"
-		set text ".conf autofils"
-		ttk::entry  $wc.e$row -textvariable $text -width 15
-		$wc.e$row insert 0 $text
-		ttk::button $wc.b$row -text "Browse" -command "cybershuttle::set_config $wc $wc.e$item"
+		ttk::label  $wc.l$item -text "Configuration"
+		set namdConfig ".conf autofils"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdConfig -width 15 -state readonly
+		
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_config $wc $wc.e$item" 
 
 		grid $wc.l$item -row $row -column 0 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 1 -sticky nsew -padx 5 -pady 5 	
@@ -93,8 +103,8 @@ proc cybershuttle::main {} {
 
 		incr item
 		ttk::label  $wc.l$item -text "Topology"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_psf $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdPSF -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_psf $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 3 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 4 -sticky nsew -padx 5 -pady 5 	
@@ -102,8 +112,8 @@ proc cybershuttle::main {} {
 
 		incr item ; incr row
 		ttk::label  $wc.l$item -text "Structure"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_structure $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdPDB -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_structure $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 0 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 1 -sticky nsew -padx 5 -pady 5 	
@@ -111,18 +121,17 @@ proc cybershuttle::main {} {
 
 		incr item
 		ttk::label  $wc.l$item -text "Coordinates"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_coordinates $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdCOR -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_coordinates $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 3 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 4 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.b$item -row $row -column 5 -sticky nsew -padx 5 -pady 5 	
 
-
 		incr item ; incr row
 		ttk::label  $wc.l$item -text "Velocities"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_velocities $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdVEL -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_velocities $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 0 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 1 -sticky nsew -padx 5 -pady 5 	
@@ -130,8 +139,8 @@ proc cybershuttle::main {} {
 
 		incr item
 		ttk::label  $wc.l$item -text "Extended"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_extended $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdXSC -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_extended $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 3 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 4 -sticky nsew -padx 5 -pady 5 	
@@ -139,8 +148,8 @@ proc cybershuttle::main {} {
 
 		incr item ; incr row
 		ttk::label  $wc.l$item -text "Restraints"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_restraints $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdRES -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_restraints $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 0 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 1 -sticky nsew -padx 5 -pady 5 	
@@ -148,8 +157,8 @@ proc cybershuttle::main {} {
 
 		incr item
 		ttk::label  $wc.l$item -text "Parameters"
-		ttk::entry  $wc.e$item  -width 15
-		ttk::button $wc.b$item -text "Browse" -command "cybershuttle::set_parameters $wc $wc.e$item"
+		ttk::entry  $wc.e$item -textvariable cybershuttlesubmit::namdPRM -width 15 -state readonly
+		ttk::button $wc.b$item -text "Browse" -command "cybershuttlesubmit::set_parameters $wc $wc.e$item"
 	
 		grid $wc.l$item -row $row -column 3 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.e$item -row $row -column 4 -sticky nsew -padx 5 -pady 5 	
@@ -199,8 +208,10 @@ proc cybershuttle::main {} {
 
 }
 
+#source CyberShuttle_functions.tcl
+#cybershuttlesubmit::main
 
-
-
-source CyberShuttle_functions.tcl
-cybershuttle::main
+proc cybershuttlesubmit_tk {} {
+  cybershuttlesubmit::main
+  return $cybershuttlesubmit::w
+}
