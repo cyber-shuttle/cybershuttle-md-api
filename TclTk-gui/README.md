@@ -77,7 +77,7 @@ Open VMD and click on _Extensions->CyberShuttle Submit_. The **CyberShuttle Subm
 ![Slide1](images/Slide1.png)
 *To use the CyberShuttle Submit plugins. In VMD Main meni, click on Extensions->CyberShuttle Submit. It will open the plugin window*
 
-#### Geting token
+#### Geting the session token
 The 3 steps to get a token. **Get token** will open a web browser, where you can login to CyberShuttle using your Institutional credentials.
 ![Slide2](images/Slide2.png)
 
@@ -99,17 +99,26 @@ Once you're done, select an project, review your options and submit! Happy simul
 ![Slide6](images/Slide6.png)
 
 ### CyberShuttle View
-**CyberShuttle View** allows users to view the list their experiments and review their status, download whole experiments and/or individual files. In addition one can select a Topology/Trajectory pair and load in VMD right away! 
-
-![Slide7](images/Slide7.png)
+**CyberShuttle View** allows users to view the list their experiments and review their status, download whole experiments and/or individual files. In addition one can select a Topology/Trajectory pair and load in VMD right away! Start up by getting a session **token**.
 ![Slide8](images/Slide8.png)
+
+#### Geting the session token
+The 3 steps to get a token. **Get token** will open a web browser, where you can login to CyberShuttle using your Institutional credentials.
 ![Slide9](images/Slide9.png)
-![Slide10](images/Slide10.png)
+
+#### Applying the token
+Once you copy the token, paste into the toke field and click Apply.
 ![Slide11](images/Slide11.png)
+
+
 ![Slide12](images/Slide12.png)
+
 ![Slide13](images/Slide13.png)
+
 ![Slide14](images/Slide14.png)
+
 ![Slide15](images/Slide15.png)
+
 ![Slide16](images/Slide16.png)
 
 
