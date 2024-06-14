@@ -10,7 +10,7 @@ package require json
 
 namespace eval cybershuttlesubmit {
 	variable w          ;# handle to main window
-	variable projects
+	variable projects [dict create]
 	variable project
 	variable replicas
 	variable token
@@ -35,15 +35,19 @@ namespace eval cybershuttlesubmit {
 	variable namdXSC 
 	variable namdRES
 	variable namdPRM
+	# List of uploaded files
+	variable url_list
+	variable namdConfigUrl
+	variable namdOtherUrl
 }
 
 proc cybershuttlesubmit::main {} {
 	variable w
 
-  global env
+    global env
 	
     # Main window
-  set           w [ toplevel .cybershuttlesubmit ]
+    set           w [ toplevel .cybershuttlesubmit ]
 	wm title     $w "CyberShuttle Interface" ; # Create window
 	wm resizable $w 0 0     				 ; # Prevent resizing
 
@@ -175,18 +179,21 @@ proc cybershuttlesubmit::main {} {
 		set wc $w.f3
 		
 		set item 0
-		ttk::label  $wc.l$item -text "Project"
-		ttk::button $wc.b$item -text "Replace by dropdown menu"
-	
+		ttk::label    $wc.l$item -text "Project"
+		ttk::button   $wc.b$item -text "Load Projects" -command { cybershuttlesubmit::listProjects }
+		ttk::combobox $wc.c$item -values [dict keys $cybershuttlesubmit::projects]
+		$wc.c$item set "Default Project"
+
 		grid $wc.l$item -row $row -column 0 -sticky nsew -padx 5 -pady 5 	
 		grid $wc.b$item -row $row -column 1 -sticky nsew -padx 5 -pady 5 	
+		grid $wc.c$item -row $row -column 2 -sticky nsew -padx 5 -pady 5 	
 		
-		incr item
-		ttk::label  $wc.l$item -text "Name"
-		ttk::entry  $wc.e$item 
+#		incr item
+#		ttk::label  $wc.l$item -text "Name"
+#		ttk::entry  $wc.e$item 
 	
-		grid $wc.l$item -row $row -column 2 -sticky nsew -padx 5 -pady 5 	
-		grid $wc.e$item -row $row -column 3 -columnspan 5 -sticky nsew -padx 5 -pady 5 	
+#		grid $wc.l$item -row $row -column 2 -sticky nsew -padx 5 -pady 5 	
+#		grid $wc.e$item -row $row -column 3 -columnspan 5 -sticky nsew -padx 5 -pady 5 	
 
     ttk::labelframe $w.f4 -text "Description" -relief groove
     grid   $w.f4 -row 3 -column 0 -sticky nsew -padx 5 -pady 5 
@@ -203,7 +210,7 @@ proc cybershuttlesubmit::main {} {
 		grid $wc.b$item -row $row -column 5 -sticky nsew -padx 5 -pady 5 	
 
 		incr item ; incr row
-		ttk::button $wc.b$item -text "Submit"
+		ttk::button $wc.b$item -text "Submit" -command {cybershuttlesubmit::submit}
 		grid $wc.b$item -row $row -column 5 -sticky nsew -padx 5 -pady 5 	
 
 }

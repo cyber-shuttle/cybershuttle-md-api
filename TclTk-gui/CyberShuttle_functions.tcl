@@ -24,7 +24,6 @@ proc cybershuttlesubmit::update_selected_file_labels {} {
     
 }
 
-
 proc cybershuttlesubmit::listFiles {} {
 	variable token
 	variable experimentId
@@ -128,34 +127,47 @@ proc cybershuttlesubmit::listExperiments {} {
 	} else { tk_messageBox -title "Expired Token" -icon error -message "Your CyberShuttle Token is expired. Please get a new one and try again." }
 }
 
-proc listProjects {token} {
-    #!/usr/bin/tclsh
-
+proc cybershuttlesubmit::listProjects {} {
+	variable projects
+	variable token
     package require http
     package require tls
     package require json
 
-    # Define your headers with the token
-    set headers [list Authorization "Bearer $token"]
+	# Define your headers with the token
+	set headers [list Authorization "Bearer $token"]
 
-    # This is your code, cut-n-pasted with blank lines removed
-    http::register https 443 tls::socket
-    set url "https://md.cybershuttlesubmit.org/api/projects/"
-    set httpreq [http::geturl $url -timeout 30000 -headers $headers]
-    set status [http::status $httpreq]
-    set answer [http::data $httpreq]
-    http::cleanup $httpreq
-    http::unregister https
+	# This is your code, cut-n-pasted with blank lines removed
+	http::register https 443 tls::socket
+	set url "https://md.cybershuttle.org/api/projects/"
+	set httpreq [http::geturl $url -timeout 30000 -headers $headers]
+	set status [http::status $httpreq]
+	set answer [http::data $httpreq]
+	http::cleanup $httpreq
+	http::unregister https
 
-    puts $status
-    puts $answer
+	puts $status
+	puts $answer
 
     # Parse the JSON data
     set jsonDict [json::json2dict $answer]
 
-    # We're only interested in "results"
-    # set results [dict get $jsonDict results]
-    return [dict get $jsonDict results]
+	puts $jsonDict
+	set results  [dict get $jsonDict results]
+	set projects [ dict create ]
+
+	foreach r $results {
+	  set name [dict get $r name] 
+	  set projectID [dict get $r projectID]
+	  puts "$name $projectID"
+	  dict set projects $name $projectID
+	}
+
+	# Print the dictionary
+	set cybershuttlesubmit::projects $projects
+	
+	# Update Combobox
+	.cybershuttlesubmit.f3.c0  configure -values [dict keys $projects]
 }
 
 # Multi-platform solution from http://wiki.tcl.tk/557
@@ -449,6 +461,220 @@ proc cybershuttlesubmit::set_parameters {parent field} {
 }		
 
 
+### Job submission
+# Step 1 - Upload files
+proc httpreq {so host sublocation body} {
+
+    # Get the length of the file contents
+    set contentSize [string length $body]
+
+    # Print the size of the file contents
+    #puts "The size of the file contents is: $contentSize bytes"
+
+    fconfigure $so -translation crlf
+    puts $so "PATCH $sublocation HTTP/1.1"
+    puts $so "Host: $host"
+    puts $so "Connection: close"
+    puts $so "Tus-Resumable: 1.0.0"
+    puts $so "Upload-Offset: 0"
+    puts $so "Accept: */*"
+    puts $so "Content-Type: application/offset+octet-stream"
+    puts $so "Content-Length: $contentSize"
+    puts $so ""
+    fconfigure $so -translation binary
+    puts $so $body
+    fconfigure $so -translation crlf
+    puts $so ""
+    flush $so
+}
+
+
+proc cybershuttlesubmit::uploadFile {filePath token} {
+    set jsonData {{""}}
+
+    set fileId [open "$filePath" r]
+    fconfigure $fileId -translation binary
+    set body [read $fileId]
+    close $fileId
+
+    set contentSize [string length $body]
+    set fileName [file tail $filePath]
+#   set encodedFileName [base64::encode $fileName]
+    set encodedFileName [binary encode base64 $fileName]
+
+    # Define your headers with the token
+    set headers [list Authorization "Bearer $token" Tus-Resumable "1.0.0" Content-Length "0" Upload-Length "$contentSize" Upload-Metadata "relativePath bnVsbA==,name $encodedFileName,type dGV4dC9wbGFpbg==,filetype dGV4dC9wbGFpbg==,filename $encodedFileName"]
+
+    # This is your code, cut-n-pasted with blank lines removed
+    http::register https 443 tls::socket
+    set url "https://tus.airavata.org/files/"
+    set httpreq [http::geturl $url -timeout 30000 -headers $headers -type application/json -query $jsonData]
+    set respHeaders [http::meta $httpreq]
+    http::cleanup $httpreq
+    http::unregister https
+
+    # puts $respHeaders
+
+    set location [dict get $respHeaders "Location"]
+    #puts $location
+    set sublocation [string range $location 24 end]
+    #set sublocation [string range $location 21 end]
+
+    #puts $sublocation
+
+    set so [tls::socket tus.airavata.org 443]
+    #set so [socket localhost 8080]
+
+    httpreq $so tus.airavata.org $sublocation $body
+
+    #read $so
+
+    set response ""
+    while {[gets $so line] >= 0} {
+        append response $line
+        append response \n
+    }
+    close $so
+
+    #puts $response
+
+    return $location
+}
+
+proc finishUpload {uploadLocation token} {
+
+    set formDataStr "------WebKitFormBoundaryAPtcuHAobNHq7AVv\r\nContent-Disposition: form-data; name=\"uploadURL\"\r\n\r\n$uploadLocation\r\n------WebKitFormBoundaryAPtcuHAobNHq7AVv--\r\n"
+    #puts $formDataStr
+
+    # Define your headers with the token
+    set headers [list Authorization "Bearer $token" Accept "application/json"]
+
+    # This is your code, cut-n-pasted with blank lines removed
+    http::register https 443 tls::socket
+    set url "https://md.cybershuttle.org/api/tus-upload-finish"
+    set httpreq [http::geturl $url -query $formDataStr -headers $headers -type "multipart/form-data; boundary=----WebKitFormBoundaryAPtcuHAobNHq7AVv"]
+
+    set status [http::status $httpreq]
+    set responseData [http::data $httpreq]
+
+    set rheaders [http::meta $httpreq]
+
+    # Print the response headers
+    #puts "Response Headers:"
+    #puts $rheaders
+
+    #set status_code [http::ncode $httpreq]
+    #puts "Status code"
+    #puts $status_code
+
+    http::cleanup $httpreq
+    http::unregister https
+
+    #puts $status
+    #puts $responseData
+
+    return $responseData
+}
+
+
+
+proc cybershuttlesubmit::submit {} {
+	cybershuttlesubmit::upload_files
+	cybershuttlesubmit::create_experiment
+}
+
+proc cybershuttlesubmit::upload_files {} {
+	variable token
+	variable url_list
+	set directory "/home/dgomes/cybershuttle_demo/SciencePull/replicas/pull"
+	set fileList [glob -nocomplain -types f $directory/*]
+
+	set url_list {} 
+	set jsonfile [open filePaths.json w]
+
+	foreach filePath $fileList {
+		set uploadLocation [uploadFile $filePath $token]
+		set replicaData [finishUpload $uploadLocation $token]
+		puts $jsonfile $replicaData
+		lappend url_list $replicaData
+		puts "Replica Json: "
+		# Keep replicaData. it is the name of each file we upload.
+		puts $replicaData
+	}
+	close $jsonfile
+}
+
+proc cybershuttlesubmit::create_experiment {} {
+	variable token
+	variable namdConfig 
+	variable namdOther
+
+	set namdConfigUrl [list]
+	set namdOtherUrl [list]
+	
+	foreach line $::cybershuttlesubmit::url_list { 
+		set jsonDict [json::json2dict $line]
+		set uri  [ dict get $jsonDict data-product productUri  ]
+		set file [ dict get $jsonDict data-product productName  ]
+	
+		set extension [file extension $file]
+		if {$extension == ".conf" || $extension == ".namd"} {
+			lappend namdConfigUrl $uri  
+		} else {
+			lappend namdOtherUrl $uri
+		}
+
+		puts "$file $uri"
+	}
+
+	puts "###########################################"
+	puts "# CyberShuttle submit file list"
+	puts "###########################################"
+	puts "File list"
+	puts "NAMD Config: $namdConfigUrl"
+	set namdOther [join $namdOtherUrl ","]
+	puts "NAMD Other: $namdOtherUrl"
+
+
+	# Open the JSON file
+	set fp [open "create-exp.json.TEMPLATE" r]
+	set jsonData [read $fp]
+	close $fp
+
+	set experimentId "VMD submit 3"
+	#set resourceHostId "NCSADelta_e75b0d04-8b4b-417b-8ab4-da76bbd835f5"
+	set resourceHostId "expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32"
+	set projectId "Demo_1760240a-7c27-4444-90bb-668284d4078f"
+
+	# Replace the words
+	set jsonData [string map [list "REPLACE_Execution_Type" "GPU" ] $jsonData ]
+	set jsonData [string map [list "REPLACE_projectId" "${projectId}" ] $jsonData ]
+	set jsonData [string map [list "REPLACE_experimentName"  "${experimentId}"] $jsonData ]
+	set jsonData [string map [list "REPLACE_resourceHostId"  "${resourceHostId}"] $jsonData ]
+	set jsonData [string map [list "REPLACE_namdConf"  "${namdConfigUrl}"] $jsonData ]
+	set jsonData [string map [list "REPLACE_namdOther"  "${namdOtherUrl}"] $jsonData ]
+
+
+	# Write the modified data back to the file
+	set fp [open "modified.json" w]
+	puts $fp $jsonData
+	close $fp
+
+	set headers [list Authorization "Bearer $token"]
+
+	# This is your code, cut-n-pasted with blank lines removed
+	http::register https 443 tls::socket
+	set url "https://md.cybershuttle.org/api/experiments/"
+	set httpreq [http::geturl $url -timeout 30000 -headers $headers -type application/json -query $jsonData]
+	set status [http::status $httpreq]
+	set answer [http::data $httpreq]
+	http::cleanup $httpreq
+	http::unregister https
+
+	puts $status
+	puts $answer
+	
+}
 
 proc test {} {
 	# Go to https://md.cybershuttlesubmit.org/auth/login-desktop/?show-code=true
