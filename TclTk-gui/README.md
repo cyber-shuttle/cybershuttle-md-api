@@ -1,5 +1,5 @@
-# Using the CyberShuttle VMD plugin (Tcl/Tk)
-(Temporary guide)
+# Using the CyberShuttle :rocket: VMD plugin (Tcl/Tk)
+(Temporary guide) 🚧 👷‍♂️👷‍♀️
 
 ## Step 1 - Clone this repository.
 ```bash
@@ -46,8 +46,26 @@ source CyberShuttle_submit.tcl
 source CyberShuttle_functions.tcl
 ```
 
-## Using the GUI
-To communicate securely with CyberShuttle you need a session token. Click on **Get token**. A webBrowser will open and you'll be guided to login using your ACCESS our University account. Once done, copy the token and click on **Apply**
+
+# Using the CyberShuttle Graphical User Interface (GUI) in VMD.
+## Introduction
+  Welcome to this tutorial on using [CyberShuttle](https://md.cybershuttle.org with [Visual Molecular Dynamics (VMD)](https://www.ks.uiuc.edu/Research/vmd/) to perform molecular dynamics simulations. This tutorial is designed to guide you through the process of setting up and running your simulations using the CyberShuttle cyberinfrastructure. 
+[CyberShuttle](https://md.cybershuttle.org) is a powerful tool that manages computational workloads and file transfers in a transparent way, allowing researchers to utilize computational resources on NSF-funded supercomputers. Powered by the Apache Airavata Framework, CyberShuttle can also be deployed to local clusters, including lab, department, and institutional clusters.
+
+### Prerequisites
+Before we begin, ensure that you have the following:
+* An account on [CyberShuttle](https://md.cybershuttle.org) :rocket:.
+* [Visual Molecular Dynamics (VMD)](https://www.ks.uiuc.edu/Research/vmd/) installed on your local machine.
+* Basic knowledge of molecular dynamics simulations. Start here: [MD tutorials](https://www.ks.uiuc.edu/Training/Tutorials/).
+* This repository.
+* A build of [tcltls](https://core.tcl-lang.org/tcltls/index), since VMD 1.9.x doesn't distribute it.
+
+## The CyberShuttle plugins
+Currently there are two independet plugins **CyberShuttle Submit** and **CyberShuttle View**. Calm down, it's a work in progress :construction:. They will be merged into a single plugin and redesigned after the [_61st Hands-on Workshop on Computational Biophysics_](https://www.ks.uiuc.edu/Training/Workshop/Auburn2024/). 
+
+To communicate securely with CyberShuttle both plugins you need a session **token**. A session **token** is a unique identifier, that is used to track and authenticate a user’s interaction with a server during a session. It’s an essential part of maintaining **secure** user sessions on the web. Right now, CyberShuttle token lasts for 10 minutes, you need to get a new token after that.
+
+
 
 
 ### CyberShuttle Submit
@@ -55,8 +73,14 @@ Submiting a job to CyberShuttle one needs to get a token, provide the input file
 Go ahead and setup you system using QwikMD, Charmm-GUI, manually, using psfgen.
 In VMD2, cybershuttle submit will also be intergrated in QwikMD.
 
+Open VMD and click on _Extensions->CyberShuttle Submit_. The **CyberShuttle Submit** plugin will pop up. Now click on **Get token**. A _webBrowser_ will open and you'll be guided to login using your ACCESS our University account. Once done, copy the token and click on **Apply**
+
 ![Slide1](images/Slide1.png)
+*image caption*
+
 ![Slide2](images/Slide2.png)
+*The 3 steps to get a token. **Get token** will open a web browser, where you can login to CyberShuttle using your Institutional credentials.*
+
 ![Slide3](images/Slide3.png)
 ![Slide4](images/Slide4.png)
 ![Slide5](images/Slide5.png)
@@ -75,6 +99,25 @@ In VMD2, cybershuttle submit will also be intergrated in QwikMD.
 ![Slide16](images/Slide16.png)
 
 
+
+Step 1: Setting Up Your Workspace on md.cybershuttle.org
+Log in to your account on md.cybershuttle.org.
+Navigate to the workspace and create a new project for your molecular dynamics simulation.
+Step 2: Preparing Your Molecular System in VMD
+Open VMD on your local machine.
+Load your molecular system into VMD.
+Use the VMD tools to prepare your system for simulation. This may include adding hydrogen atoms, solvating the system, and adding ions.
+Step 3: Uploading Your System to md.cybershuttle.org
+Save your prepared system in a format compatible with the simulation software you plan to use (e.g., GROMACS, AMBER, NAMD).
+Upload the system files to your project on md.cybershuttle.org.
+Step 4: Running Your Simulation on md.cybershuttle.org
+Set up your simulation parameters on md.cybershuttle.org.
+Submit your simulation job. The CyberShuttle infrastructure will manage the computational workload and file transfers.
+Step 5: Analyzing Your Results
+Once your simulation is complete, you can download the results for analysis. You can use VMD or other analysis tools to examine the behavior of your molecular system.
+Conclusion
+This tutorial provided a basic overview of how to use md.cybershuttle.org with VMD to perform molecular dynamics simulations. Remember, the CyberShuttle infrastructure is a powerful tool that can help streamline your research and make efficient use of computational resources.
+Please note that this is a basic draft and you might need to add or modify steps based on the specific requirements of your simulation and the features of the md.cybershuttle.org platform. Happy simulating!
 
 
 
