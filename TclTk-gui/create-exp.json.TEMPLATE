@@ -1,0 +1,411 @@
+{
+    "experimentId": null,
+    "projectId": "REPLACE_projectId",
+    "gatewayId": null,
+    "experimentType": 0,
+    "userName": null,
+    "experimentName": "REPLACE_experimentName",
+    "creationTime": null,
+    "description": null,
+    "executionId": "NAMD_dd041e87-1dde-4e57-8ec4-23af2ffa1ba0",
+    "enableEmailNotification": false,
+    "emailAddresses": null,
+    "userConfigurationData": {
+        "airavataAutoSchedule": false,
+        "overrideManualScheduledParams": false,
+        "shareExperimentPublicly": false,
+        "computationalResourceScheduling": {
+            "resourceHostId": "REPLACE_resourceHostId",
+            "totalCPUCount": 10,
+            "nodeCount": 1,
+            "numberOfThreads": null,
+            "queueName": "gpu-shared",
+            "wallTimeLimit": 30,
+            "totalPhysicalMemory": null,
+            "chessisNumber": null,
+            "staticWorkingDir": null,
+            "overrideLoginUserName": null,
+            "overrideScratchLocation": null,
+            "overrideAllocationProjectNumber": null
+        },
+        "throttleResources": false,
+        "userDN": null,
+        "generateCert": false,
+        "storageId": null,
+        "experimentDataDir": null,
+        "useUserCRPref": false,
+        "groupResourceProfileId": "f47130f7-33a8-4856-8ac9-19967724c1b8",
+        "autoScheduledCompResourceSchedulingList": null
+    },
+    "experimentInputs": [
+        {
+            "name": "Execution_Type",
+            "value": "REPLACE_Execution_Type",
+            "type": 0,
+            "applicationArgument": "-t",
+            "standardInput": false,
+            "userFriendlyDescription": "REPLACE_Description",
+            "metaData": {
+                "editor": {
+                    "ui-component-id": "radio-button-input-editor",
+                    "config": {
+                        "options": [
+                            {
+                                "value": "CPU",
+                                "text": " CPU"
+                            },
+                            {
+                                "value": "GPU",
+                                "text": "GPU"
+                            }
+                        ]
+                    }
+                }
+            },
+            "inputOrder": 0,
+            "isRequired": true,
+            "requiredToAddedToCommandLine": true,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "ca8caa0d-ed60-4229-8d0a-103487a73eac",
+            "show": true
+        },
+        {
+            "name": "Continue_from_Previous_Run?",
+            "value": null,
+            "type": 0,
+            "applicationArgument": null,
+            "standardInput": false,
+            "userFriendlyDescription": null,
+            "metaData": {
+                "editor": {
+                    "ui-component-id": "checkbox-input-editor",
+                    "config": {
+                        "options": [
+                            {
+                                "value": "yes",
+                                "text": "Yes"
+                            }
+                        ]
+                    }
+                }
+            },
+            "inputOrder": 1,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "183f5b9f-397a-48bb-9d81-b0bed335b3e7",
+            "show": true
+        },
+        {
+            "name": "Previous_JobID",
+            "value": null,
+            "type": 0,
+            "applicationArgument": "-r",
+            "standardInput": false,
+            "userFriendlyDescription": "JobID from the previous run from which the restart/reuse data is to be extracted.",
+            "metaData": {
+                "editor": {
+                    "dependencies": {
+                        "show": {
+                            "Continue_from_Previous_Run?": {
+                                "comparison": "equals",
+                                "value": "yes"
+                            }
+                        },
+                        "showOptions": {
+                            "isRequired": true
+                        }
+                    }
+                }
+            },
+            "inputOrder": 2,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": true,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "110197d1-2262-475e-9096-d06b17e8f392",
+            "show": false
+        },
+        {
+            "name": "MD-Instructions-Input",
+            "value": "REPLACE_namdConf",
+            "type": 3,
+            "applicationArgument": "-i",
+            "standardInput": false,
+            "userFriendlyDescription": "NAMD conf file/QuickMD conf file",
+            "metaData": null,
+            "inputOrder": 3,
+            "isRequired": true,
+            "requiredToAddedToCommandLine": true,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "fb6853a0-9471-4f69-b180-7299be12a43d",
+            "show": true
+        },
+        {
+            "name": "Optional_Inputs",
+            "value": "REPLACE_namdOther",
+            "type": 4,
+            "applicationArgument": null,
+            "standardInput": false,
+            "userFriendlyDescription": "Any other optional and all needed inputs to be uploaded",
+            "metaData": null,
+            "inputOrder": 8,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "166efb0a-e47a-4e56-a915-8669a64bed4e",
+            "show": true
+        },
+        {
+            "name": "Replicate?",
+            "value": null,
+            "type": 0,
+            "applicationArgument": null,
+            "standardInput": false,
+            "userFriendlyDescription": "Optionally Specify if Replicated runs needed. Make sure the resources requested are commensurate, such as as many nodes as replicas.",
+            "metaData": {
+                "editor": {
+                    "ui-component-id": "checkbox-input-editor",
+                    "config": {
+                        "options": [
+                            {
+                                "value": "yes",
+                                "text": "Yes"
+                            }
+                        ]
+                    }
+                }
+            },
+            "inputOrder": 9,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "9e31c9c5-62dd-48d7-9ba8-5f014e774f64",
+            "show": true
+        },
+        {
+            "name": "Number of Replicas",
+            "value": null,
+            "type": 1,
+            "applicationArgument": "-n",
+            "standardInput": false,
+            "userFriendlyDescription": "Specify the number of replicas. Make sure the resources requested are commensurate, such as as many nodes as replicas.",
+            "metaData": {
+                "editor": {
+                    "dependencies": {
+                        "show": {
+                            "Replicate?": {
+                                "comparison": "equals",
+                                "value": "yes"
+                            }
+                        },
+                        "showOptions": {
+                            "isRequired": true
+                        }
+                    }
+                }
+            },
+            "inputOrder": 10,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": true,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "71bfd947-966a-432a-8a1d-9a6a3ea343dc",
+            "show": false
+        },
+        {
+            "name": "Restart_Replicas_List",
+            "value": null,
+            "type": 0,
+            "applicationArgument": "-l",
+            "standardInput": false,
+            "userFriendlyDescription": "Optionally specify a comma delimited list of replicas to restart (incomplete runs from a previous job), Make sure the resources requested are commensurate, such as as many nodes as replicas.",
+            "metaData": {
+                "editor": {
+                    "dependencies": {
+                        "show": {
+                            "Continue_from_Previous_Run?": {
+                                "comparison": "equals",
+                                "value": "yes"
+                            }
+                        },
+                        "showOptions": {
+                            "isRequired": false
+                        }
+                    }
+                }
+            },
+            "inputOrder": 11,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": true,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": false,
+            "overrideFilename": null,
+            "_key": "622197cd-edc6-4572-a0ee-0f426fb26b12",
+            "show": false
+        },
+        {
+            "name": "GPU Resource Warning",
+            "value": null,
+            "type": 0,
+            "applicationArgument": null,
+            "standardInput": false,
+            "userFriendlyDescription": "The GPU Execution_Type  selected above  requires GPU partition selection. Otherwise it may lead to failed run.",
+            "metaData": {
+                "editor": {
+                    "dependencies": {
+                        "show": {
+                            "Execution_Type": {
+                                "comparison": "equals",
+                                "value": "GPU"
+                            }
+                        },
+                        "showOptions": {
+                            "isRequired": false
+                        }
+                    }
+                }
+            },
+            "inputOrder": 12,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataStaged": false,
+            "storageResourceId": null,
+            "isReadOnly": true,
+            "overrideFilename": null,
+            "_key": "2bebab43-950a-4aa6-9c9d-7bad11fc754c",
+            "show": false
+        }
+    ],
+    "experimentOutputs": [
+        {
+            "name": "Coordinate_Files",
+            "value": "*.coor",
+            "type": 4,
+            "applicationArgument": null,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataMovement": false,
+            "location": null,
+            "searchQuery": null,
+            "outputStreaming": false,
+            "storageResourceId": null,
+            "metaData": null,
+            "intermediateOutput": null,
+            "_key": "af95d41c-85ac-4865-9275-c446ade851da"
+        },
+        {
+            "name": "NAMD-Standard-Error",
+            "value": null,
+            "type": 6,
+            "applicationArgument": null,
+            "isRequired": true,
+            "requiredToAddedToCommandLine": false,
+            "dataMovement": false,
+            "location": null,
+            "searchQuery": null,
+            "outputStreaming": false,
+            "storageResourceId": null,
+            "metaData": {
+                "file-metadata": {
+                    "mime-type": "text/plain"
+                }
+            },
+            "intermediateOutput": null,
+            "_key": "4c8ff27e-3418-4c2c-a899-9dbe02fcdd11"
+        },
+        {
+            "name": "NAMD-Standard-Out",
+            "value": null,
+            "type": 5,
+            "applicationArgument": null,
+            "isRequired": true,
+            "requiredToAddedToCommandLine": false,
+            "dataMovement": false,
+            "location": null,
+            "searchQuery": null,
+            "outputStreaming": false,
+            "storageResourceId": null,
+            "metaData": {
+                "file-metadata": {
+                    "mime-type": "text/plain"
+                }
+            },
+            "intermediateOutput": null,
+            "_key": "4b94ddb0-17ad-4467-b09e-b5c95100a9ff"
+        },
+        {
+            "name": "Replica_Outputs",
+            "value": "*.out",
+            "type": 4,
+            "applicationArgument": null,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataMovement": false,
+            "location": null,
+            "searchQuery": null,
+            "outputStreaming": false,
+            "storageResourceId": null,
+            "metaData": null,
+            "intermediateOutput": null,
+            "_key": "0e7cec16-0920-43b2-8318-9f097e0f303a"
+        },
+        {
+            "name": "Restart_Files",
+            "value": "*.restart.*",
+            "type": 4,
+            "applicationArgument": null,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataMovement": false,
+            "location": null,
+            "searchQuery": null,
+            "outputStreaming": false,
+            "storageResourceId": null,
+            "metaData": null,
+            "intermediateOutput": null,
+            "_key": "213a63bd-6f41-4b4f-b0a0-f1293538c74b"
+        },
+        {
+            "name": "Trajectory-Files",
+            "value": "*.dcd",
+            "type": 4,
+            "applicationArgument": null,
+            "isRequired": false,
+            "requiredToAddedToCommandLine": false,
+            "dataMovement": false,
+            "location": null,
+            "searchQuery": null,
+            "outputStreaming": false,
+            "storageResourceId": null,
+            "metaData": null,
+            "intermediateOutput": null,
+            "_key": "037abd85-fbb9-4f6d-ac00-2c513f3ddf09"
+        }
+    ],
+    "experimentStatus": null,
+    "errors": null,
+    "processes": null,
+    "workflow": null,
+    "userHasWriteAccess": true
+}
