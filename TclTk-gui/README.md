@@ -49,9 +49,30 @@ source CyberShuttle_functions.tcl
 ## Using the GUI
 To communicate securely with CyberShuttle you need a session token. Click on **Get token**. A webBrowser will open and you'll be guided to login using your ACCESS our University account. Once done, copy the token and click on **Apply**
 
-### CyberShuttle View
+
 ### CyberShuttle Submit
- 
+Submiting a job to CyberShuttle one needs to get a token, provide the input files, and submit the job.
+Go ahead and setup you system using QwikMD, Charmm-GUI, manually, using psfgen.
+In VMD2, cybershuttle submit will also be intergrated in QwikMD.
+
+![Slide1](images/Slide1.png)
+![Slide2](images/Slide2.png)
+![Slide3](images/Slide3.png)
+![Slide4](images/Slide4.png)
+![Slide5](images/Slide5.png)
+![Slide6](images/Slide6.png)
+
+### CyberShuttle View
+![Slide7](images/Slide7.png)
+![Slide8](images/Slide8.png)
+![Slide9](images/Slide9.png)
+![Slide10](images/Slide10.png)
+![Slide11](images/Slide11.png)
+![Slide12](images/Slide12.png)
+![Slide13](images/Slide13.png)
+![Slide14](images/Slide14.png)
+![Slide15](images/Slide15.png)
+![Slide16](images/Slide16.png)
 
 
 
