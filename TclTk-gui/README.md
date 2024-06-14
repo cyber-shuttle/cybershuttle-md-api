@@ -65,9 +65,6 @@ Currently there are two independet plugins **CyberShuttle Submit** and **CyberSh
 
 To communicate securely with CyberShuttle both plugins you need a session **token**. A session **token** is a unique identifier, that is used to track and authenticate a user’s interaction with a server during a session. It’s an essential part of maintaining **secure** user sessions on the web. Right now, CyberShuttle token lasts for 10 minutes, you need to get a new token after that.
 
-
-
-
 ### CyberShuttle Submit
 Submiting a job to CyberShuttle one needs to get a token, provide the input files, and submit the job.
 Go ahead and setup you system using QwikMD, Charmm-GUI, manually, using psfgen.
@@ -76,15 +73,22 @@ In VMD2, cybershuttle submit will also be intergrated in QwikMD.
 Open VMD and click on _Extensions->CyberShuttle Submit_. The **CyberShuttle Submit** plugin will pop up. Now click on **Get token**. A _webBrowser_ will open and you'll be guided to login using your ACCESS our University account. Once done, copy the token and click on **Apply**
 
 ![Slide1](images/Slide1.png)
-*image caption*
+*To use the CyberShuttle Submit plugins. In VMD Main meni, click on Extensions->CyberShuttle Submit. It will open the plugin window*
 
 ![Slide2](images/Slide2.png)
 *The 3 steps to get a token. **Get token** will open a web browser, where you can login to CyberShuttle using your Institutional credentials.*
 
 ![Slide3](images/Slide3.png)
+*Once you copy the token, paste into the toke field and click Apply.*
+
 ![Slide4](images/Slide4.png)
+*Fill the forms by browsing you Molecular Dynamics input files, starting by the NAMD configuration file (.conf). Fill the other fields accordingly to what's defined in the .conf file, including the Topology, Structure, Coordinates, Velocities, Extended system, Restraints, and Parameters.*
+
 ![Slide5](images/Slide5.png)
+*Each Browse button helps you find the files with the relevant extension, NAMD configuration files (.conf/.namd), Velocities (.vel), Structure (.pdb), Coordinates (.coor/.pdb), Parameters (.prm,.str)*
+
 ![Slide6](images/Slide6.png)
+*Once you're done, select an project, review your options and submit! Happy simulations!*
 
 ### CyberShuttle View
 ![Slide7](images/Slide7.png)
