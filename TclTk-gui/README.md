@@ -69,7 +69,8 @@ To communicate securely with CyberShuttle both plugins you need a session **toke
 Submiting a job to CyberShuttle one needs to get a token, provide the input files, and submit the job.
 Go ahead and setup you system using QwikMD, Charmm-GUI, manually, using psfgen.
 In VMD2, cybershuttle submit will also be intergrated in QwikMD.
-
+* CyberShuttle allows and additional post-processing .tcl to be submited 🏗️🚧
+  
 Open VMD and click on _Extensions->CyberShuttle Submit_. The **CyberShuttle Submit** plugin will pop up. Now click on **Get token**. A _webBrowser_ will open and you'll be guided to login using your ACCESS our University account. Once done, copy the token and click on **Apply**
 
 ![Slide1](images/Slide1.png)
@@ -91,6 +92,8 @@ Open VMD and click on _Extensions->CyberShuttle Submit_. The **CyberShuttle Subm
 *Once you're done, select an project, review your options and submit! Happy simulations!*
 
 ### CyberShuttle View
+**CyberShuttle View** allows users to view the list their experiments and review their status, download whole experiments and/or individual files. In addition one can select a Topology/Trajectory pair and load in VMD right away! 
+
 ![Slide7](images/Slide7.png)
 ![Slide8](images/Slide8.png)
 ![Slide9](images/Slide9.png)
