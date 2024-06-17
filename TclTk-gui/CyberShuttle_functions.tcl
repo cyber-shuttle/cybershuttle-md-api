@@ -581,6 +581,7 @@ proc finishUpload {uploadLocation token} {
 proc cybershuttlesubmit::submit {} {
 	 cybershuttlesubmit::upload_files
 	 cybershuttlesubmit::create_experiment
+  	 cybershuttlesubmit::launch_experiment
 }
 
 proc cybershuttlesubmit::upload_files {} {
