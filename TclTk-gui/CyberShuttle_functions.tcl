@@ -688,6 +688,27 @@ proc cybershuttlesubmit::create_experiment {} {
 	
 }
 
+
+proc cybershuttlesubmit::launch_experiment {} {
+	variable token
+ 	variable experimentId
+	 
+	# Define your headers with the token
+	set headers [list Authorization "Bearer $token"]
+	
+	# This is your code, cut-n-pasted with blank lines removed
+	http::register https 443 tls::socket
+	set url "https://md.cybershuttle.org/api/experiments/${experimentID}/launch/"
+	set httpreq [http::POST  $url -timeout 30000 -headers $headers]
+	set status [http::status $httpreq]
+	set answer [http::data $httpreq]
+	http::cleanup $httpreq
+	http::unregister https
+	
+	puts $status
+	puts $answer
+}
+
 proc test {} {
 	# Go to https://md.cybershuttlesubmit.org/auth/login-desktop/?show-code=true
 	set token "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzX0dPcDFvM1p6U19ncVZjN1U3M1BNbThsMmxKbmZLRDg1N29tV2RaX0U4In0.eyJqdGkiOiI2NzgyNjA0OC04NWUwLTQ5ZDgtOTcyYi1kOTE3MjZkMGJmN2UiLCJleHAiOjE3MTc0NjIwNzUsIm5iZiI6MCwiaWF0IjoxNzE3NDYwMjc1LCJpc3MiOiJodHRwczovL2lhbS5zY2lnYXAub3JnL2F1dGgvcmVhbG1zL21vbGVjdWxhci1keW5hbWljcyIsImF1ZCI6InBnYSIsInN1YiI6IjZmZDI1MWFlLWUzMGUtNGI4Yi1hOTNlLWQyNjExNDM2NzIzYSIsInR5cCI6IkJlYXJlciIsImF6cCI6InBnYSIsImF1dGhfdGltZSI6MTcxNzQ2MDI3NSwic2Vzc2lvbl9zdGF0ZSI6ImI4MzhhMjUxLTYwYmUtNDcyYy1hODhmLTdiMzJhNGUwMThmYiIsImFjciI6IjEiLCJjbGllbnRfc2Vzc2lvbiI6ImI3OWU2NDFiLTQwYmYtNDBlNi1iZWMxLWM2YzFlNWFkYzYxOSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL21kLmN5YmVyc2h1dHRsZS5vcmciXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYnJva2VyIjp7InJvbGVzIjpbInJlYWQtdG9rZW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJuYW1lIjoiRGllZ28gQmFycmV0byBHb21lcyIsInByZWZlcnJlZF91c2VybmFtZSI6ImRlYjAwNTRAYXVidXJuLmVkdSIsImdpdmVuX25hbWUiOiJEaWVnbyIsImZhbWlseV9uYW1lIjoiQmFycmV0byBHb21lcyIsImVtYWlsIjoiZGViMDA1NEBhdWJ1cm4uZWR1In0.QpLvPhuww9dCFiQYnw2Fm8kM-wMw_LPqKbRwJLkCvb-a6QRLiA_nb8i-4iXMyP8Uqb1T-rFnKp-Net53vXOe_bIqGNSZ2AY9nmNR5t7GGbPVarehp2OIgPchGXGgSZwuz25SPL0aTEzOxtFINPU1qeGE21App2sBAzUDc8zgkLeqjd_FKUpxDT4xjSRhbSvqFaGSoEH0y1VQHBkSTVOlR8jhksRLBE9TVfgQu9yvRPU0AUcYxx4TXPbQ0clgvx55SG9BYNATDpnDrWyykMK5Xip-ZMccTejb56iR_pEarx2Eh0_oUvlSnRIwhtKSZdinYlfhO1CDitl554jaohF_dg"
