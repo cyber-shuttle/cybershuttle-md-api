@@ -13,7 +13,22 @@ cd cybershuttle-md-api/TclTk-gui
 
 
 ## Pre-requisites
-Secure communication with CyberShuttle requires "tcltls" which isn't shipped with VMD. Make sure to build a local top and add it to <b>~/.vmdrc</b>
+Secure communication with CyberShuttle requires "tcltls" which isn't shipped with VMD.
+Make sure to build a local top and add it to <b>~/.vmdrc</b>
+```bash
+# TclTLS (Linux or MacOS)
+
+# Download tcltls and build
+wget https://core.tcl-lang.org/tcltls/uv/tcltls-1.7.22.tar.gz
+
+# Configure (replace prefix by your favorite install location)
+./configure --prefix=/Users/deb0054/software/vmd_dependencies/tcltls 
+
+# Build & install 
+make install 
+```
+
+Now add **tcltls** to <b>~/.vmdrc</b>
 ```bash
 lappend auto_path /home/dgomes/software/vmd_dependencies/tcltls/lib/tcltls1.7.22/
 ```
