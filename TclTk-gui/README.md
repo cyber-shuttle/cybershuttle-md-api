@@ -28,7 +28,7 @@ wget https://core.tcl-lang.org/tcltls/uv/tcltls-1.7.22.tar.gz
 make install 
 ```
 
-Now add **tcltls** to <b>~/.vmdrc</b>
+Now add **tcltls** to <b>~/.vmdrc</b>. Change the path to the one you installed it to.
 ```bash
 lappend auto_path /home/dgomes/software/vmd_dependencies/tcltls/lib/tcltls1.7.22/
 ```
