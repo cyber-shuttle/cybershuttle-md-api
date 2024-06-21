@@ -18,6 +18,7 @@ namespace eval cybershuttlesubmit {
 	variable token
 	variable experiments
 	variable experimentId
+        variable experimentName
 	variable experimentFiles
 	variable experimentFileNames
 	variable experimentURL
@@ -179,7 +180,14 @@ proc cybershuttlesubmit::main {} {
 		# Current window/frame
 		set wc $w.f3
 		
-		set item 0
+		set row 0 ; set item 0
+                ttk::label    $wc.l$item -text "Experiment Name"
+                ttk::entry    $wc.e$item -textvariable cybershuttlesubmit::experimentName 
+                grid $wc.l$item -row $row -column 0 -sticky nsew -padx 5 -pady 5
+                grid $wc.e$item -row $row -column 1 -sticky nsew -padx 5 -pady 5
+
+
+		incr row ; incr item
 		ttk::label    $wc.l$item -text "Project"
 		ttk::button   $wc.b$item -text "Load Projects" -command { cybershuttlesubmit::listProjects }
 		ttk::combobox $wc.c$item -values [dict keys $cybershuttlesubmit::projects]

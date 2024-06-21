@@ -167,7 +167,7 @@ proc cybershuttlesubmit::listProjects {} {
 	set cybershuttlesubmit::projects $projects
 	
 	# Update Combobox
-	.cybershuttlesubmit.f3.c0  configure -values [dict keys $projects]
+	.cybershuttlesubmit.f3.c1  configure -values [dict keys $projects]
 }
 
 # Multi-platform solution from http://wiki.tcl.tk/557
@@ -620,6 +620,8 @@ proc cybershuttlesubmit::create_experiment {} {
 	variable token
 	variable namdConfig 
 	variable namdOther
+        variable experimentName
+        variable experimentId
 
 	set namdConfigUrl [list]
 	set namdOtherUrl [list]
@@ -644,7 +646,7 @@ proc cybershuttlesubmit::create_experiment {} {
 	puts "###########################################"
 	puts "File list"
 	puts "NAMD Config: $namdConfigUrl"
-	set namdOther [join $namdOtherUrl ","]
+	set namdOtherUrl [join $namdOtherUrl ","]
 	puts "NAMD Other: $namdOtherUrl"
 
 
@@ -653,7 +655,7 @@ proc cybershuttlesubmit::create_experiment {} {
 	set jsonData [read $fp]
 	close $fp
 
-	set experimentId "VMD submit 3"
+#	set experimentId "VMD submit 3"
 	#set resourceHostId "NCSADelta_e75b0d04-8b4b-417b-8ab4-da76bbd835f5"
 	set resourceHostId "expanse_34f71d6b-765d-4bff-be2e-30a74f5c8c32"
 	set projectId "Demo_1760240a-7c27-4444-90bb-668284d4078f"
@@ -661,7 +663,7 @@ proc cybershuttlesubmit::create_experiment {} {
 	# Replace the words
 	set jsonData [string map [list "REPLACE_Execution_Type" "GPU" ] $jsonData ]
 	set jsonData [string map [list "REPLACE_projectId" "${projectId}" ] $jsonData ]
-	set jsonData [string map [list "REPLACE_experimentName"  "${experimentId}"] $jsonData ]
+	set jsonData [string map [list "REPLACE_experimentName"  "${experimentName}"] $jsonData ]
 	set jsonData [string map [list "REPLACE_resourceHostId"  "${resourceHostId}"] $jsonData ]
 	set jsonData [string map [list "REPLACE_namdConf"  "${namdConfigUrl}"] $jsonData ]
 	set jsonData [string map [list "REPLACE_namdOther"  "${namdOtherUrl}"] $jsonData ]
@@ -685,6 +687,10 @@ proc cybershuttlesubmit::create_experiment {} {
 
 	puts $status
 	puts $answer
+
+        set jsonDict [json::json2dict $answer]
+        set experimentId  [ dict get $jsonDict experimentId  ]
+	puts "experimentId ${experimentId} $::cybershuttlesubmit::experimentId"
 	
 }
 
@@ -692,14 +698,17 @@ proc cybershuttlesubmit::create_experiment {} {
 proc cybershuttlesubmit::launch_experiment {} {
 	variable token
  	variable experimentId
-	 
+        variable experimentName
+	set jsonData {{"name":"GO"}}
+
 	# Define your headers with the token
 	set headers [list Authorization "Bearer $token"]
 	
 	# This is your code, cut-n-pasted with blank lines removed
 	http::register https 443 tls::socket
-	set url "https://md.cybershuttle.org/api/experiments/${experimentID}/launch/"
-	set httpreq [http::POST  $url -timeout 30000 -headers $headers]
+	set url "https://md.cybershuttle.org/api/experiments/${experimentId}/launch/"
+        set httpreq [http::geturl $url -timeout 30000 -headers $headers -type application/json -query $jsonData]
+
 	set status [http::status $httpreq]
 	set answer [http::data $httpreq]
 	http::cleanup $httpreq
