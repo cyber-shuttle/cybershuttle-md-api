@@ -34,8 +34,10 @@ lappend auto_path /home/dgomes/software/vmd_dependencies/tcltls/lib/tcltls1.7.22
 ```
 
 ## Installing CyberShuttle VMD plugin
-Add the path to the TclTk-gui directory to <b>~/.vmdrc</b>
+Add the path to the TclTk-gui directory to <b>~/.vmdrc</b>. 
+It should look like this, just make sure to change the path to where you compiled **tcltls**:
 ```bash
+menu main on
 lappend auto_path /home/dgomes/github/cybershuttle-md-api/TclTk-gui/
 vmd_install_extension cybershuttle cybershuttle_tk "CyberShuttle Viewer"
 vmd_install_extension cybershuttlesubmit cybershuttlesubmit_tk "CyberShuttle Submit"
