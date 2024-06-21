@@ -599,7 +599,7 @@ proc cybershuttlesubmit::upload_files {} {
 	#set directory "/home/dgomes/cybershuttle_demo/SciencePull/replicas/pull"
 	#set directory [file join [pwd] pull ] 	
 	#set fileList [glob -nocomplain -types f $directory/*]
-	set fileList [list $namdConfig $namdPSF $namdPDB $namdCOR $namdVEL $namdXSC $namdRES $namdPRM]
+	set fileList [list $namdConfig $namdPSF $namdPDB $namdCOR $namdVEL $namdXSC $namdRES {*}$namdPRM]
 
 	set url_list {} 
 	set jsonfile [open filePaths.json w]

@@ -51,7 +51,8 @@ proc cybershuttle::main {} {
 	}
 
  	# Import the tcl file
-	source /home/dgomes/github/Forest-ttk-theme/forest-light.tcl
+	set cybershuttle_path [file dirname [file normalize [info script]]]
+	source [file join $cybershuttle_path Forest-ttk-theme forest-light.tcl ]
 
 	# Set theme using the theme use method
 	ttk::style theme use forest-light
