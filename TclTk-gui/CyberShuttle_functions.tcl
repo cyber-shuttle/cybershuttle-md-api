@@ -740,7 +740,7 @@ proc confparser {} {
 
   # Read the configuration file
   #set filename "pull.conf"
-  set file [open $filename]
+  set file [open $namdConfig]
   set content [read $file]
   close $file
 
