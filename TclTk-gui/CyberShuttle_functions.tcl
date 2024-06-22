@@ -778,7 +778,7 @@ proc cybershuttlesubmit::confparser {} {
         "binvelocities" {
             set namdVEL [lindex $words 1]
             if { [ file pathtype $namdVEL ]  == "relative" } {
-              set namdVER [file join $directoryPath $namdVEL ]
+              set namdVEL [file join $directoryPath $namdVEL ]
             }
         }
         "structure" {
