@@ -744,6 +744,8 @@ proc cybershuttlesubmit::confparser {} {
   set content [read $file]
   close $file
 
+  set directoryPath [file dirname $namdConfig]
+
   # Split the content into lines
   set lines [split $content "\n"]
 
@@ -757,25 +759,47 @@ proc cybershuttlesubmit::confparser {} {
     switch -- [lindex $words 0] {
         "coordinates" {
             set namdPDB [lindex $words 1]
+            if { [ file pathtype $namdPDB ]  == relative } {
+              set namdPDB [file join directoryPath $namdPDB ] 
+            }
         }
         "bincoordinates" {
             set namdCOR [lindex $words 1]
+            if { [ file pathtype $namdCOR ]  == relative } {
+              set namdCOR [file join directoryPath $namdCOR ]
+            }
         }
         "extendedsystem" {
             set namdXSC [lindex $words 1]
+            if { [ file pathtype $namdXSC ]  == relative } {
+              set namdXSC [file join directoryPath $namdXSC ]
+            }
         }
         "binvelocities" {
             set namdVEL [lindex $words 1]
+            if { [ file pathtype $namdVEL ]  == relative } {
+              set namdVER [file join directoryPath $namdVEL ]
+            }
         }
         "structure" {
             set namdPSF [lindex $words 1]
+            if { [ file pathtype $namdPSF ]  == relative } {
+              set namdPSF [file join directoryPath $namdPSF ]
+            }
         }
         "parameters" {
             # Since there are multiple 'parameters' lines, append them
-            set namdPRM "$namdPRM [lindex $words 1]"
+            set filename [lindex $words 1]
+            if { [ file pathtype $filename ]  == relative } {
+              set filename [file join directoryPath $filename ]
+            }
+            set namdPRM "$namdPRM $filename"
         }
         "conskfile" {
             set namdRES [lindex $words 1]
+            if { [ file pathtype $namdRES ]  == relative } {
+              set namdRES [file join directoryPath $namdRES ]
+            }
         }
     }
   }
@@ -783,6 +807,11 @@ proc cybershuttlesubmit::confparser {} {
 }
 
 
+#set pathType1 [file pathtype $filePath1]
+#set pathType2 [file pathtype $filePath2]
+
+#puts "Path type of $filePath1 is: $pathType1"  ;# Expected to be 'relative'
+#puts "Path type of $filePath2 is: $pathType2"  ;# Expected to be 'absolute'
 
 
 proc test {} {
