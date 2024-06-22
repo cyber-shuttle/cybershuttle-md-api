@@ -62,7 +62,7 @@ proc cybershuttlesubmit::main {} {
 	}
 	
 	# Import the tcl file
-	if { [ lsearch [ttk::themes] forest-light] > 0 } {
+	if { [ lsearch [ttk::themes] forest-light] < 0 } {
             source [ file join $env(CYBERSHUTTLEDIR) Forest-ttk-theme forest-light.tcl ]
     	    # Set theme using the theme use method
 	    ttk::style theme use forest-light

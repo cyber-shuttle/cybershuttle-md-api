@@ -54,7 +54,7 @@ proc cybershuttle::main {} {
 	#set cybershuttle_path [file dirname [file normalize [info script]]]
 	#source [file join $cybershuttle_path Forest-ttk-theme forest-light.tcl ]
         # Import the tcl file
-        if { [ lsearch [ttk::themes] forest-light] > 0 } {
+        if { [ lsearch [ttk::themes] forest-light] < 0 } {
             source [ file join $env(CYBERSHUTTLEDIR) Forest-ttk-theme forest-light.tcl ]
             # Set theme using the theme use method
             ttk::style theme use forest-light
