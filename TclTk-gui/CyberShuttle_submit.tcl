@@ -1,7 +1,8 @@
 #lappend auto_path /home/dgomes/software/vmd_dependencies/tcltls/lib/tcltls1.7.22/
 #lappend auto_path /home/dgomes/software/vmd-1.9.4.58dgomes/lib/plugins/noarch/tcl/json1.0/
+lappend auto_path /Users/deb0054/software/vmd_dependencies/tcltls/lib/tcltls1.7.22/
 lappend auto_path {Applications/VMD 1.9.4a57-arm64-Rev12.app/Contents/vmd/plugins/noarch/tcl/json1.0}
-lappend auto_path /opt/homebrew/Cellar/tcl-tk/8.6.14/lib/tcltls1.7.22/
+#lappend auto_path /opt/homebrew/Cellar/tcl-tk/8.6.14/lib/tcltls1.7.22/
 
 package provide cybershuttlesubmit 0.8
 package require Tk
@@ -219,7 +220,7 @@ proc cybershuttlesubmit::main {} {
 		grid $wc.b$item -row $row -column 5 -sticky nsew -padx 5 -pady 5 	
 
 		incr item ; incr row
-		ttk::button $wc.b$item -text "Submit" -command {cybershuttlesubmit::submit}
+		ttk::button $wc.b$item -text "Submit" -command {cybershuttlesubmit::submit ; $wc.b$item .configure -state disabled }
 		grid $wc.b$item -row $row -column 5 -sticky nsew -padx 5 -pady 5 	
 
 }
