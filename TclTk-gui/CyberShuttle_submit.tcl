@@ -226,8 +226,9 @@ proc cybershuttlesubmit::main {} {
 
 }
 
-source CyberShuttle_functions.tcl
-cybershuttlesubmit::main
+#source CyberShuttle_functions.tcl
+#cybershuttlesubmit::main
+source [file join $env(CYBERSHUTTLEDIR) CyberShuttle_functions.tcl]
 
 proc cybershuttlesubmit_tk {} {
   cybershuttlesubmit::main
