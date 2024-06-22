@@ -718,6 +718,73 @@ proc cybershuttlesubmit::launch_experiment {} {
 	puts $answer
 }
 
+
+
+proc confparser {} {
+  variable namdConfig 
+  variable namdPSF
+  variable namdPDB
+  variable namdCOR
+  variable namdVEL 
+  variable namdXSC
+  variable namdRES
+  variable namdPRM
+
+  set namdPSF ""
+  set namdPDB ""
+  set namdCOR ""
+  set namdVEL ""
+  set namdXSC ""
+  set namdRES ""
+  set namdPRM ""
+
+  # Read the configuration file
+  #set filename "pull.conf"
+  set file [open $filename]
+  set content [read $file]
+  close $file
+
+  # Split the content into lines
+  set lines [split $content "\n"]
+
+  # Iterate over each line
+  foreach line $lines {
+    # Skip lines that start with a hash
+    if {[string index $line 0] eq "#"} continue
+    # Split the line into words
+    set words [split $line]
+    # Check if the first word is a keyword and store the second word as the value
+    switch -- [lindex $words 0] {
+        "coordinates" {
+            set namdPDB [lindex $words 1]
+        }
+        "bincoordinates" {
+            set namdCOR [lindex $words 1]
+        }
+        "extendedsystem" {
+            set namdXSC [lindex $words 1]
+        }
+        "binvelocities" {
+            set namdVEL [lindex $words 1]
+        }
+        "structure" {
+            set namdPSF [lindex $words 1]
+        }
+        "parameters" {
+            # Since there are multiple 'parameters' lines, append them
+            set namdPRM "$namdPRM [lindex $words 1]"
+        }
+        "conskfile" {
+            set namdRES [lindex $words 1]
+        }
+    }
+  }
+
+}
+
+
+
+
 proc test {} {
 	# Go to https://md.cybershuttlesubmit.org/auth/login-desktop/?show-code=true
 	set token "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzX0dPcDFvM1p6U19ncVZjN1U3M1BNbThsMmxKbmZLRDg1N29tV2RaX0U4In0.eyJqdGkiOiI2NzgyNjA0OC04NWUwLTQ5ZDgtOTcyYi1kOTE3MjZkMGJmN2UiLCJleHAiOjE3MTc0NjIwNzUsIm5iZiI6MCwiaWF0IjoxNzE3NDYwMjc1LCJpc3MiOiJodHRwczovL2lhbS5zY2lnYXAub3JnL2F1dGgvcmVhbG1zL21vbGVjdWxhci1keW5hbWljcyIsImF1ZCI6InBnYSIsInN1YiI6IjZmZDI1MWFlLWUzMGUtNGI4Yi1hOTNlLWQyNjExNDM2NzIzYSIsInR5cCI6IkJlYXJlciIsImF6cCI6InBnYSIsImF1dGhfdGltZSI6MTcxNzQ2MDI3NSwic2Vzc2lvbl9zdGF0ZSI6ImI4MzhhMjUxLTYwYmUtNDcyYy1hODhmLTdiMzJhNGUwMThmYiIsImFjciI6IjEiLCJjbGllbnRfc2Vzc2lvbiI6ImI3OWU2NDFiLTQwYmYtNDBlNi1iZWMxLWM2YzFlNWFkYzYxOSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL21kLmN5YmVyc2h1dHRsZS5vcmciXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYnJva2VyIjp7InJvbGVzIjpbInJlYWQtdG9rZW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJuYW1lIjoiRGllZ28gQmFycmV0byBHb21lcyIsInByZWZlcnJlZF91c2VybmFtZSI6ImRlYjAwNTRAYXVidXJuLmVkdSIsImdpdmVuX25hbWUiOiJEaWVnbyIsImZhbWlseV9uYW1lIjoiQmFycmV0byBHb21lcyIsImVtYWlsIjoiZGViMDA1NEBhdWJ1cm4uZWR1In0.QpLvPhuww9dCFiQYnw2Fm8kM-wMw_LPqKbRwJLkCvb-a6QRLiA_nb8i-4iXMyP8Uqb1T-rFnKp-Net53vXOe_bIqGNSZ2AY9nmNR5t7GGbPVarehp2OIgPchGXGgSZwuz25SPL0aTEzOxtFINPU1qeGE21App2sBAzUDc8zgkLeqjd_FKUpxDT4xjSRhbSvqFaGSoEH0y1VQHBkSTVOlR8jhksRLBE9TVfgQu9yvRPU0AUcYxx4TXPbQ0clgvx55SG9BYNATDpnDrWyykMK5Xip-ZMccTejb56iR_pEarx2Eh0_oUvlSnRIwhtKSZdinYlfhO1CDitl554jaohF_dg"
