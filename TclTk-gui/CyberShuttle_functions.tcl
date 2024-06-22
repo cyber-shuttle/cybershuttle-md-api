@@ -720,7 +720,7 @@ proc cybershuttlesubmit::launch_experiment {} {
 
 
 
-proc confparser {} {
+proc cybershuttlesubmit::confparser {} {
   variable namdConfig 
   variable namdPSF
   variable namdPDB
